@@ -1,0 +1,36 @@
+{"frames": {
+
+"Rocket-2_000.png":
+{
+	"frame": {"x":0,"y":0,"w":15,"h":7},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":7},
+	"sourceSize": {"w":15,"h":7}
+},
+"Rocket-2_001.png":
+{
+	"frame": {"x":15,"y":0,"w":15,"h":7},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":7},
+	"sourceSize": {"w":15,"h":7}
+},
+"Rocket-2_002.png":
+{
+	"frame": {"x":30,"y":0,"w":15,"h":7},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":7},
+	"sourceSize": {"w":15,"h":7}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "bulletLeft.png",
+	"format": "RGBA8888",
+	"size": {"w":45,"h":7},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:825a53af003f503e2966ce3f4e3e69b7:cffca7382f96d6f4fd47ed30b49e8916:0ecad64e3f7a27cf0802246024331410$"
+}
+}

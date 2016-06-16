@@ -1,0 +1,17 @@
+{
+  "name": "Grimm",
+  "homepage": "https://github.com/Jessicashinjo/Grimm",
+  "authors": [
+    "Jessica Wynn <Jessicashinjo@gmail.com>"
+  ],
+  "description": "2D Platformer",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
