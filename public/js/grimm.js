@@ -1,5 +1,5 @@
 var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'main')
-var stateTestmap = {preload: preload, create: create,update: update};
+var stateTestmap = {preload: preload, create: create,update: update, render: render};
 game.state.add('stateTestmap', stateTestmap);
 game.state.start('stateTestmap');
 
@@ -42,15 +42,13 @@ function create() {
   map.setCollisionBetween(1, 100000, true, 'dangerZone');
 
   game.physics.arcade.gravity.y = 350;
-  // game.physics.arcade.world.defaultContactMaterial.friction = 0.3;
-  // game.physics.arcade.world.setGlobalStiffness(1e5);
 
   //  Here we create our coins group
   coinsGroup = game.add.group();
   coinsGroup.enableBody = true;
 
-  //  And now we convert all of the Tiled objects with an ID of 34 into sprites within the coins group
-  map.createFromObjects('coins', 11, 'coinSprite', 0, true, false, coinsGroup);
+  //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
+  map.createFromObjects('coins', 1476, 'coinSprite', 0, true, false, coinsGroup);
 
   //  Add animations to all of the coin sprites
   coinsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3], 10, true);
@@ -65,6 +63,7 @@ function create() {
   //  Enable if for physics. This creates a default rectangular body.
   game.physics.arcade.enable(p);
 
+  p.body.setSize(28, 34, 8, 13);
   // game.physics.arcade.setBoundsToWorld(true, true, true, false, false);
   p.body.collideWorldBounds = true;;
 
@@ -80,8 +79,9 @@ function create() {
 function update() {
     game.physics.arcade.collide(p, ground);
     game.physics.arcade.collide(p, danger, playerDeath);
-    game.physics.arcade.collide(ground, coinGroup);
-    // game.physics.arcade.overlap(p, coins, collectCoin, null, this);
+    // game.physics.arcade.collide(ground, coinGroup);
+    game.physics.arcade.collide(coinGroup, ground);
+    game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
 
   p.body.velocity.x = 0;
 
