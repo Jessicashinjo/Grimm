@@ -1,5 +1,5 @@
-var game = new Phaser.Game(700, 325, Phaser.CANVAS, 'main')
-var stateTestmap = {preload: preload, create: create,update: update, render: render};
+var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'main')
+var stateTestmap = {preload: preload, create: create,update: update};
 game.state.add('stateTestmap', stateTestmap);
 game.state.start('stateTestmap');
 
@@ -7,9 +7,12 @@ game.state.start('stateTestmap');
 
 function preload() {
   game.load.tilemap('basic_map', 'assets/maps/grimm_level1.json', null, Phaser.Tilemap.TILED_JSON);
-  game.load.image('tileset', 'assets/tilesets/Gimp_tilesheet2.png');
-  game.load.image('background', 'assets/tilesets/bg.png');
+  game.load.image('tileset', 'assets/tilesets/sheetbw.png');
+  game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
+  game.load.image('tileset3', 'assets/tilesets/spikes.png');
+  game.load.image('background', 'assets/tilesets/bg_shroom.png');
   game.load.spritesheet('ninja', 'assets/sprites/ninja.png', 50, 50);
+  game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
 
 }
 
@@ -22,11 +25,12 @@ var jumpButton;
 var ground;
 var danger;
 var spikes;
+var coinGroup;
 
 function create() {
   //  Enable Arcade physics
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  game.world.setBounds(0, 0, 700, 325);
+  game.world.setBounds(0, 0, 1000, 500);
   createLevel1()
 
 
@@ -34,16 +38,27 @@ function create() {
   // ground.debug = true;
 
   //COLLISION
-  map.setCollisionBetween(1, 100000, true, 'DangerColl');
-  map.setCollisionBetween(1, 100000, true, 'Ground');
+  map.setCollisionBetween(1, 100000, true, 'platform');
+  map.setCollisionBetween(1, 100000, true, 'dangerZone');
 
   game.physics.arcade.gravity.y = 350;
   // game.physics.arcade.world.defaultContactMaterial.friction = 0.3;
   // game.physics.arcade.world.setGlobalStiffness(1e5);
 
+  //  Here we create our coins group
+  coinsGroup = game.add.group();
+  coinsGroup.enableBody = true;
+
+  //  And now we convert all of the Tiled objects with an ID of 34 into sprites within the coins group
+  map.createFromObjects('coins', 11, 'coinSprite', 0, true, false, coinsGroup);
+
+  //  Add animations to all of the coin sprites
+  coinsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3], 10, true);
+  coinsGroup.callAll('animations.play', 'animations', 'spin');
+
 
   //  Add a sprite
-  p = game.add.sprite(100, 50, 'ninja');
+  p = game.add.sprite(100, 300, 'ninja');
 
   playerRun();
 
@@ -65,6 +80,8 @@ function create() {
 function update() {
     game.physics.arcade.collide(p, ground);
     game.physics.arcade.collide(p, danger, playerDeath);
+    game.physics.arcade.collide(ground, coinGroup);
+    // game.physics.arcade.overlap(p, coins, collectCoin, null, this);
 
   p.body.velocity.x = 0;
 
@@ -104,16 +121,25 @@ function playerRun() {
 }
 
 function createLevel1() {
-  background = game.add.tileSprite(0, 0, 700, 325, 'background');
+  background = game.add.tileSprite(0, 0, 1000, 500, 'background');
   map = game.add.tilemap('basic_map');
-  map.addTilesetImage('Gimp_tilesheet2', 'tileset');
+  map.addTilesetImage('sheetbw', 'tileset');
+  map.addTilesetImage('nautical_tilesheetbw', 'tileset2');
+  map.addTilesetImage('spikes', 'tileset3');
 
   map.setCollisionByExclusion([1]);
-  map.createLayer('Foliage');
-  ground = map.createLayer('Ground');
-  danger = map.createLayer('DangerColl');
+  map.createLayer('background');
+  danger = map.createLayer('dangerZone');
+  ground = map.createLayer('platform');
+  // health = map.createLayer('health');
 
-  danger.resizeWorld();
+  ground.resizeWorld();
+}
+
+function collectCoin(p, coin) {
+
+    coin.kill();
+
 }
 
 function playerDeath() {
