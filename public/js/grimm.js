@@ -1,5 +1,5 @@
 var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'main')
-var stateTestmap = {preload: preload, create: create,update: update, render: render};
+var stateTestmap = {preload: preload, create: create,update: update};
 game.state.add('stateTestmap', stateTestmap);
 game.state.start('stateTestmap');
 
@@ -25,11 +25,17 @@ var jumpButton;
 var ground;
 var danger;
 var spikes;
-var coinGroup;
+var coinsGroup;
+var score;
+var lives = 1;
+var scoreText;
 
 function create() {
   //  Enable Arcade physics
   game.physics.startSystem(Phaser.Physics.ARCADE);
+  score = 0;
+  game.score = score;
+
   game.world.setBounds(0, 0, 1000, 500);
   createLevel1()
 
@@ -41,7 +47,7 @@ function create() {
   map.setCollisionBetween(1, 100000, true, 'platform');
   map.setCollisionBetween(1, 100000, true, 'dangerZone');
 
-  game.physics.arcade.gravity.y = 350;
+  game.physics.arcade.gravity.y = 600;
 
   //  Here we create our coins group
   coinsGroup = game.add.group();
@@ -73,6 +79,9 @@ function create() {
   camera();
   cursors = game.input.keyboard.createCursorKeys();
   jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+  scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+  scoreText.fixedToCamera = true;
 }
 
 
@@ -80,7 +89,7 @@ function update() {
     game.physics.arcade.collide(p, ground);
     game.physics.arcade.collide(p, danger, playerDeath);
     // game.physics.arcade.collide(ground, coinGroup);
-    game.physics.arcade.collide(coinGroup, ground);
+    game.physics.arcade.collide(coinsGroup, ground);
     game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
 
   p.body.velocity.x = 0;
@@ -97,8 +106,8 @@ function update() {
   }
 
   if (cursors.up.isDown && p.body.onFloor() && game.time.now > jumpTimer) {
-      p.body.velocity.y = -300;
-      jumpTimer = game.time.now + 750;
+      p.body.velocity.y = -350;
+      jumpTimer = game.time.now + 500;
   }
 
 }
@@ -137,9 +146,9 @@ function createLevel1() {
 }
 
 function collectCoin(p, coin) {
-
     coin.kill();
-
+    score += 1;
+    scoreText.text = `Score: ${score}`;
 }
 
 function playerDeath() {
@@ -150,6 +159,7 @@ function playerDeath() {
   p.body.y -= 75;
   p.kill();
   restartGame();
+  lives = 1;
   // --hitCount;
   // healthText.text = 'Health: ' + hitCount;
 }
