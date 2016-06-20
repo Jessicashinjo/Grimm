@@ -1,5 +1,5 @@
-var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'main')
-var stateTestmap = {preload: preload, create: create,update: update};
+var game = new Phaser.Game(1000, 500, Phaser.CANVAS, 'main')
+var stateTestmap = {preload: preload, create: create,update: update, render: render};
 game.state.add('stateTestmap', stateTestmap);
 game.state.start('stateTestmap');
 
@@ -11,9 +11,14 @@ function preload() {
   game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
   game.load.image('tileset3', 'assets/tilesets/spikes.png');
   game.load.image('background', 'assets/tilesets/bg_shroom.png');
+  game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
+  game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
+  game.load.image('playerBullet', 'assets/sprites/playerBullet.png');
   game.load.spritesheet('ninja', 'assets/sprites/ninja.png', 50, 50);
   game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
+  game.load.spritesheet('gunSprite', 'assets/sprites/gunSprite.png', 70, 70);
 
+  // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
 }
 
 var map
@@ -21,14 +26,27 @@ var bg;
 var p;
 var jumpTimer = 0;
 var cursors;
-var jumpButton;
 var ground;
 var danger;
 var spikes;
 var coinsGroup;
+var bullet;
+var bullets;
+var guns;
+var gunTime = 0;
 var score;
-var lives = 1;
+var health = 1;
+var healthText;
 var scoreText;
+var right = 16;
+var left = 22;
+var facing;
+var shoot;
+// var maceGroup
+// var mace1 = {
+//     'x': [280, 384, 415, 514],
+//     'y': [187, 281, 281, 208]
+//   };
 
 function create() {
   //  Enable Arcade physics
@@ -44,22 +62,30 @@ function create() {
   // ground.debug = true;
 
   //COLLISION
-  map.setCollisionBetween(1, 100000, true, 'platform');
-  map.setCollisionBetween(1, 100000, true, 'dangerZone');
+  map.setCollisionBetween(1, 2000, true, 'platform');
+  map.setCollisionBetween(1, 2000, true, 'dangerZone');
 
   game.physics.arcade.gravity.y = 600;
 
-  //  Here we create our coins group
-  coinsGroup = game.add.group();
-  coinsGroup.enableBody = true;
+  createCoinsGroup();
 
-  //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
-  map.createFromObjects('coins', 1476, 'coinSprite', 0, true, false, coinsGroup);
+  createGunsGroup();
 
-  //  Add animations to all of the coin sprites
-  coinsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3], 10, true);
-  coinsGroup.callAll('animations.play', 'animations', 'spin');
-
+  createBullets();
+  /****************
+  ****************/
+  // maceGroup = game.add.group();
+  // maceGroup.enableBody = true;
+  // // game.physics.enable( [ maceGroup ], Phaser.Physics.ARCADE);
+  //
+  // //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the mace group
+  // map.createFromObjects('dangerObjects', 1480, 'maceSprite', 0, true, false, maceGroup);
+  //
+  // maceGroup.forEach(function(mace){mace.body.allowGravity = false;  });
+  //
+  // //  Add animations to all of the coin sprites
+  // maceGroup.callAll('animations.add', 'animations', 'swing', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], 10, true);
+  // maceGroup.callAll('animations.play', 'animations', 'swing');
 
   //  Add a sprite
   p = game.add.sprite(100, 300, 'ninja');
@@ -78,19 +104,34 @@ function create() {
 
   camera();
   cursors = game.input.keyboard.createCursorKeys();
-  jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  shoot = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
   scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
   scoreText.fixedToCamera = true;
+
+
 }
 
 
 function update() {
     game.physics.arcade.collide(p, ground);
     game.physics.arcade.collide(p, danger, playerDeath);
-    // game.physics.arcade.collide(ground, coinGroup);
+    game.physics.arcade.collide(p, gunsGroup);
     game.physics.arcade.collide(coinsGroup, ground);
     game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
+    game.physics.arcade.collide(p, bullet, bulletKill, null, this);
+
+    gunsGroup.forEach(function(gun){
+      if(gun.body.x - p.body.x <= 400) {
+        gunFire(gun);
+      }
+    });
+    gunsGroup.forEachAlive(function(bullet){
+      if(bullet.body.x - game.cameraLastX <= 0) {
+        bullet.kill();
+      }
+    });
+
 
   p.body.velocity.x = 0;
 
@@ -98,11 +139,20 @@ function update() {
   if (cursors.left.isDown) {
     p.body.velocity.x = -250;
     p.animations.play('left');
+    facing = left;
   } else if (cursors.right.isDown) {
     p.body.velocity.x = 250;
     p.animations.play('right');
-  } else {
-    p.frame = 16;
+    facing = right;
+  } else if ( facing === right){
+    p.frame = right;
+  } else{
+    p.frame = left;
+  }
+
+  /* Player Firing Shots*/
+  if (shoot.isDown) {
+    playerFire();
   }
 
   if (cursors.up.isDown && p.body.onFloor() && game.time.now > jumpTimer) {
@@ -110,12 +160,18 @@ function update() {
       jumpTimer = game.time.now + 500;
   }
 
+  // if(game.camera.x !== game.cameraLastX){
+  //   game.bg.x -= 0.4 * (game.cameraLastX - game.camera.x);
+  //   game.cameraLastX = game.camera.x;
+  // }
+
 }
 
 function render() {
 
     game.debug.body(p);
     game.debug.bodyInfo(p, 32, 320);
+    game.debug.body(bullets.children[0])
 
 }
 
@@ -145,10 +201,83 @@ function createLevel1() {
   ground.resizeWorld();
 }
 
+function createCoinsGroup() {
+  //  Here we create our coins group
+  coinsGroup = game.add.group();
+  coinsGroup.enableBody = true;
+
+  //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
+  map.createFromObjects('coins', 1476, 'coinSprite', 0, true, false, coinsGroup);
+
+  //  Add animations to all of the coin sprites
+  coinsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3], 8, true);
+  coinsGroup.callAll('animations.play', 'animations', 'spin');
+}
+
 function collectCoin(p, coin) {
     coin.kill();
     score += 1;
     scoreText.text = `Score: ${score}`;
+}
+
+function createGunsGroup() {
+  //  Here we create our guns group
+  gunsGroup = game.add.group();
+  gunsGroup.enableBody = true;
+
+  //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
+  map.createFromObjects('dangerObjects', 1502, 'gunSprite', 0, true, false, gunsGroup);
+
+  gunsGroup.forEach(function(gun, index){
+    gun.body.allowGravity = false;
+    gun.gunTime = 0;
+    gun.outOfBoundsKill = true;
+    gun.checkWorldBounds = true;
+  });
+
+
+  //  Add animations to all of the gun sprites
+  gunsGroup.callAll('animations.add', 'animations', 'fire', [2, 3], 2, true);
+  gunsGroup.callAll('animations.play', 'animations', 'fire');
+}
+
+function createBullets () {
+  bullets = game.add.group();
+  bullets.enableBody = true;
+  bullets.createMultiple(100, 'enemyBullet');
+  bullets.forEach(function(bullet){
+    bullet.allowGravity = false;
+    bullet.body.setSize(20, 20);
+  });
+  // bullets.setAll('anchor.x', 0.5);
+  // bullets.setAll('anchor.y', 0.5);
+  bullets.setAll('outOfBoundsKill', true);
+  bullets.setAll('checkWorldBounds', true);
+}
+
+function bulletKill() {
+  bullet.kill();
+  playerDeath();
+}
+
+function gunFire (gun) {
+  // console.log('I am the gun', gun.x);
+  if (game.time.now > gun.gunTime)
+  {
+    bullet = bullets.getFirstExists(false);
+    if (bullet) {
+      bullet.anchor.setTo(0.5, 0.5);
+      bullet.reset(gun.body.x +5, gun.body.y +20);
+      gun.gunTime = game.time.now + 2000;
+      // bullet.body.velocity.x -100;
+      // bullet.body.velocity.y +400;
+      game.physics.arcade.moveToObject(bullet, p, 500);
+    }
+  }
+}
+
+function playerFire() {
+  console.log("You fired your weapon!");
 }
 
 function playerDeath() {
