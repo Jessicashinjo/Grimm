@@ -13,7 +13,7 @@ function preload() {
   game.load.image('background', 'assets/tilesets/bg_shroom.png');
   game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
   game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
-  game.load.image('playerBullet', 'assets/sprites/playerBullet.png');
+  game.load.image('pBullet', 'assets/sprites/playerBullet.png');
   game.load.spritesheet('ninja', 'assets/sprites/ninja.png', 50, 50);
   game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
   game.load.spritesheet('gunSprite', 'assets/sprites/gunSprite.png', 70, 70);
@@ -32,6 +32,9 @@ var spikes;
 var coinsGroup;
 var bullet;
 var bullets;
+var playerBullets;
+var playerBullet;
+var playerBulletTime = 0;
 var guns;
 var gunTime = 0;
 var score;
@@ -72,6 +75,8 @@ function create() {
   createGunsGroup();
 
   createBullets();
+
+  createPlayerBullets();
   /****************
   ****************/
   // maceGroup = game.add.group();
@@ -118,8 +123,10 @@ function update() {
     game.physics.arcade.collide(p, danger, playerDeath);
     game.physics.arcade.collide(p, gunsGroup);
     game.physics.arcade.collide(coinsGroup, ground);
+    game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
+    // game.physics.arcade.overlap(playerBullet, bullets, playerBulletKill, null, this);
+    game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
     game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
-    game.physics.arcade.collide(p, bullet, bulletKill, null, this);
 
     gunsGroup.forEach(function(gun){
       if(gun.body.x - p.body.x <= 400) {
@@ -131,6 +138,13 @@ function update() {
         bullet.kill();
       }
     });
+
+    playerBullets.forEachAlive(function(playerBullet){
+      // var distanceFromPlayer = 600;
+      if(Math.abs(p.x - playerBullet.x) >= 300) {
+        playerBullet.kill();
+      }
+    }, this);
 
 
   p.body.velocity.x = 0;
@@ -144,10 +158,10 @@ function update() {
     p.body.velocity.x = 250;
     p.animations.play('right');
     facing = right;
-  } else if ( facing === right){
-    p.frame = right;
-  } else{
+  } else if ( facing === left){
     p.frame = left;
+  } else{
+    p.frame = right;
   }
 
   /* Player Firing Shots*/
@@ -169,9 +183,9 @@ function update() {
 
 function render() {
 
-    game.debug.body(p);
-    game.debug.bodyInfo(p, 32, 320);
-    game.debug.body(bullets.children[0])
+    // game.debug.body(p);
+    // game.debug.bodyInfo(p, 32, 320);
+    // game.debug.body(bullets.children[0])
 
 }
 
@@ -216,7 +230,7 @@ function createCoinsGroup() {
 
 function collectCoin(p, coin) {
     coin.kill();
-    score += 1;
+    score += 10;
     scoreText.text = `Score: ${score}`;
 }
 
@@ -254,10 +268,33 @@ function createBullets () {
   bullets.setAll('outOfBoundsKill', true);
   bullets.setAll('checkWorldBounds', true);
 }
+function createPlayerBullets () {
+  playerBullets = game.add.group();
+  playerBullets.enableBody = true;
+  playerBullets.createMultiple(10, 'pBullet');
+  playerBullets.forEach(function(playerBullet){
+    playerBullet.allowGravity = true;
+    playerBullet.body.setSize(30, 12);
+  });
+  // bullets.setAll('anchor.x', 0.5);
+  // bullets.setAll('anchor.y', 0.5);
+  playerBullets.setAll('outOfBoundsKill', true);
+  playerBullets.setAll('checkWorldBounds', true);
+}
 
 function bulletKill() {
   bullet.kill();
-  playerDeath();
+  losePoints();
+}
+
+function playerBulletKill() {
+  playerBullet.kill();
+}
+
+function enemyPlayerBulletKill() {
+  console.log('kill all the bullets');
+  bullet.kill();
+  playerBullet.kill();
 }
 
 function gunFire (gun) {
@@ -277,7 +314,30 @@ function gunFire (gun) {
 }
 
 function playerFire() {
-  console.log("You fired your weapon!");
+ if (game.time.now > playerBulletTime  && facing === right) {
+      playerBullet = playerBullets.getFirstExists(false);
+      if (playerBullet) {
+          playerBullet.reset(p.x , p.y + 20);
+          playerBullet.body.velocity.x = 600;
+          playerBulletTime = game.time.now + 750;
+      }
+  } else if (game.time.now > playerBulletTime && facing === left) {
+      playerBullet = playerBullets.getFirstExists(false);
+
+      if (playerBullet) {
+          playerBullet.reset(p.x , p.y + 20);
+          playerBullet.body.velocity.x = -600;
+          playerBulletTime = game.time.now + 750;
+      }
+  }
+}
+
+function losePoints() {
+  if ( Math.abs(score - 10) >= 0) {
+    score -= score - 10;
+  } else {
+    playerDeath();
+  }
 }
 
 function playerDeath() {
@@ -288,7 +348,7 @@ function playerDeath() {
   p.body.y -= 75;
   p.kill();
   restartGame();
-  lives = 1;
+  score = 0;
   // --hitCount;
   // healthText.text = 'Health: ' + hitCount;
 }
