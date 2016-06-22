@@ -1,0 +1,89 @@
+html,
+body {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/***************
+Log In
+****************/
+
+.loginView {
+  width: 100%;
+  min-height: 777px;
+  background-image: url('assets/backgrounds/metalGrunge.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.loginView h1 {
+  margin: 0;
+  text-align: center;
+}
+
+/***************
+Menu Styling
+****************/
+
+#menu {
+  width: 100%;
+  min-height: 777px;
+  background-image: url('assets/backgrounds/metalGrunge.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#menu h1 {
+  padding-bottom: 1%;
+  text-align: center;
+  color: rgb(77, 8, 8);
+  font-size: 2.5em;
+}
+
+.menuInfo {
+  padding-bottom: 2%;
+  position: absolute;
+  top: 21%;
+  left: 12%;
+  opacity: .9;
+  border-radius: 2em;
+  width : 80%;
+  /*margin: auto;*/
+  font-size: 1.5em;
+  font-weight: bold;
+  color: rgb(77, 8, 8);
+  background: rgba(255, 255, 255, .5);
+}
+
+.startBtn {
+  background-color: white;
+  width: 100%;
+  font-size: 2em;
+}
+
+/************
+Game View
+************/
+
+.gameView {
+  width: 100%;
+  min-height: 777px;
+  background-image: url('assets/backgrounds/metalGrunge3.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.gameView h1 {
+  margin: 0;
+  padding: 3%;
+  text-align: center;
+}
+
+canvas {
+    padding: 0;
+    margin: auto;
+    display: block;
+    width: 100%;
+    border-radius: 2em;
+}

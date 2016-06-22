@@ -1,4 +1,4 @@
 grimm
-  .factory('loginFactory', ($location, $timeout) => {
-    
+  .factory('loginFactory', function ($location, $timeout) {
+
   })

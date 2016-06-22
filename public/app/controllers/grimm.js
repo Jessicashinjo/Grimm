@@ -1,7 +1,9 @@
 grimm
-  .controller('GameCtrl', function (gameInit) {
-    var game = gameInit;
-    var lvl1 = {preload: preload, create: create,update: update, render: render};
+  .controller('GameCtrl', function () {
+    var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'gameCanvas');
+
+    // let game = gameInit;
+    let lvl1 = {preload: preload, create: create,update: update, render: render};
     game.state.add('lvl1', lvl1);
     game.state.start('lvl1');
 
@@ -23,32 +25,31 @@ grimm
       // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
     }
 
-    var map
-    var bg;
-    var p;
-    var jumpTimer = 0;
-    var cursors;
-    var ground;
-    var danger;
-    var spikes;
-    var coinsGroup;
-    var bullet;
-    var bullets;
-    var playerBullets;
-    var playerBullet;
-    var playerBulletTime = 0;
-    var guns;
-    var gunTime = 0;
-    var score;
-    var health = 1;
-    var healthText;
-    var scoreText;
-    var right = 16;
-    var left = 22;
-    var facing;
-    var shoot;
-    // var maceGroup
-    // var mace1 = {
+    let map
+    let bg;
+    let p;
+    let jumpTimer = 0;
+    let cursors;
+    let ground;
+    let danger;
+    let spikes;
+    let coinsGroup;
+    let bullet;
+    let bullets;
+    let playerBullets;
+    let playerBullet;
+    let playerBulletTime = 0;
+    let guns;
+    let score;
+    let health = 1;
+    let healthText;
+    let scoreText;
+    let right = 16;
+    let left = 22;
+    let facing;
+    let shoot;
+    // let maceGroup
+    // let mace1 = {
     //     'x': [280, 384, 415, 514],
     //     'y': [187, 281, 281, 208]
     //   };
@@ -142,7 +143,7 @@ grimm
         });
 
         playerBullets.forEachAlive(function(playerBullet){
-          // var distanceFromPlayer = 600;
+          // let distanceFromPlayer = 600;
           if(Math.abs(p.x - playerBullet.x) >= 300) {
             playerBullet.kill();
           }
@@ -359,6 +360,6 @@ grimm
         // Start the 'stateTestmap' state, which restarts the game
         // StateManager.destroy('stateTestmap');
         // game.state.clear('stateTestmap')
-        game.state.start('stateTestmap');
+        game.state.start('lvl1');
     }
 })
