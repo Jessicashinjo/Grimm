@@ -3,13 +3,25 @@
 <html lang="en">
 <head>
  <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1">
  <title>Grimm</title>
  <link rel="stylesheet" href="main.css">
 </head>
 <body>
-  <div id="main">
+  <div ng-app="grimm">
+    <div ng-view></div>
   </div>
-  <script src="bower_components/phaser/build/phaser.min.js"></script>
-  <script src="js/grimm.js"></script>
+  <script src="vendor/angular/angular.min.js"></script>
+  <script src="vendor/angular-route/angular-route.min.js"></script>
+  <script src="vendor/phaser/build/phaser.min.js"></script>
+  <script src="app/main.js"></script>
+  <script src="app/config/mainConfig.js"></script>
+  <script src="app/factories/initializeGame.factory.js"></script>
+  <script src="app/factories/login.factory.js"></script>
+  <script src="app/controllers/login.js"></script>
+  <script src="app/controllers/grimm.js"></script>
+  <script src="app/controllers/menu.js"></script>
+  <script src="app/controllers/stats.js"></script>
+  <!-- <script src=""></script> -->
 </body>
 </html>
