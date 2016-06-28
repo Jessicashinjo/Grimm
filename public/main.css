@@ -22,6 +22,21 @@ Log In
   text-align: center;
 }
 
+form {
+  padding-top: 15%;
+  max-width: 30%;
+  margin: auto;
+  color: white;
+  font-size: 2em;
+}
+
+form h3 {
+  padding: 5%;
+  margin: 0;
+  text-align: center;
+  color: white;
+}
+
 /***************
 Menu Styling
 ****************/

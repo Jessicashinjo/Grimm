@@ -25,24 +25,25 @@ grimm
       // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
     }
 
-    let map
-    let bg;
+    let map;
     let p;
     let jumpTimer = 0;
     let cursors;
+    let background;
     let ground;
     let danger;
-    let spikes;
+    // let spikes;
     let coinsGroup;
     let bullet;
     let bullets;
     let playerBullets;
     let playerBullet;
     let playerBulletTime = 0;
-    let guns;
+    let gunsGroup;
+    // let guns;
     let score;
-    let health = 1;
-    let healthText;
+    // let health = 1;
+    // let healthText;
     let scoreText;
     let right = 16;
     let left = 22;
@@ -61,7 +62,7 @@ grimm
       game.score = score;
 
       game.world.setBounds(0, 0, 1000, 500);
-      createLevel1()
+      createLevel1();
 
 
       //  Un-comment this on to see the collision tiles
@@ -105,7 +106,7 @@ grimm
 
       p.body.setSize(28, 34, 8, 13);
       // game.physics.arcade.setBoundsToWorld(true, true, true, false, false);
-      p.body.collideWorldBounds = true;;
+      p.body.collideWorldBounds = true;
 
       p.body.fixedRotation = true;
       p.body.damping = 0.5;
@@ -122,32 +123,32 @@ grimm
 
 
     function update() {
-        game.physics.arcade.collide(p, ground);
-        game.physics.arcade.collide(p, danger, playerDeath);
-        game.physics.arcade.collide(p, gunsGroup);
-        game.physics.arcade.collide(coinsGroup, ground);
-        game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
-        // game.physics.arcade.overlap(playerBullet, bullets, playerBulletKill, null, this);
-        game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
-        game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
+      game.physics.arcade.collide(p, ground);
+      game.physics.arcade.collide(p, danger, playerDeath);
+      game.physics.arcade.collide(p, gunsGroup);
+      game.physics.arcade.collide(coinsGroup, ground);
+      game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
+      // game.physics.arcade.overlap(playerBullet, bullets, playerBulletKill, null, this);
+      game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
+      game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
 
-        gunsGroup.forEach(function(gun){
-          if(gun.body.x - p.body.x <= 400) {
-            gunFire(gun);
-          }
-        });
-        gunsGroup.forEachAlive(function(bullet){
-          if(bullet.body.x - game.cameraLastX <= 0) {
-            bullet.kill();
-          }
-        });
+      gunsGroup.forEach(function(gun){
+        if(gun.body.x - p.body.x <= 400) {
+          gunFire(gun);
+        }
+      });
+      gunsGroup.forEachAlive(function(bullet){
+        if(bullet.body.x - game.cameraLastX <= 0) {
+          bullet.kill();
+        }
+      });
 
-        playerBullets.forEachAlive(function(playerBullet){
-          // let distanceFromPlayer = 600;
-          if(Math.abs(p.x - playerBullet.x) >= 300) {
-            playerBullet.kill();
-          }
-        }, this);
+      playerBullets.forEachAlive(function(playerBullet){
+        // let distanceFromPlayer = 600;
+        if(Math.abs(p.x - playerBullet.x) >= 300) {
+          playerBullet.kill();
+        }
+      }, this);
 
 
       p.body.velocity.x = 0;
@@ -173,8 +174,8 @@ grimm
       }
 
       if (cursors.up.isDown && p.body.onFloor() && game.time.now > jumpTimer) {
-          p.body.velocity.y = -350;
-          jumpTimer = game.time.now + 500;
+        p.body.velocity.y = -350;
+        jumpTimer = game.time.now + 500;
       }
 
       // if(game.camera.x !== game.cameraLastX){
@@ -232,9 +233,9 @@ grimm
     }
 
     function collectCoin(p, coin) {
-        coin.kill();
-        score += 10;
-        scoreText.text = `Score: ${score}`;
+      coin.kill();
+      score += 10;
+      scoreText.text = `Score: ${score}`;
     }
 
     function createGunsGroup() {
@@ -245,7 +246,7 @@ grimm
       //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
       map.createFromObjects('dangerObjects', 1502, 'gunSprite', 0, true, false, gunsGroup);
 
-      gunsGroup.forEach(function(gun, index){
+      gunsGroup.forEach(function(gun){
         gun.body.allowGravity = false;
         gun.gunTime = 0;
         gun.outOfBoundsKill = true;
@@ -290,12 +291,12 @@ grimm
       losePoints();
     }
 
-    function playerBulletKill() {
-      playerBullet.kill();
-    }
+    // function playerBulletKill() {
+    //   playerBullet.kill();
+    // }
 
     function enemyPlayerBulletKill() {
-      console.log('kill all the bullets');
+      // console.log('kill all the bullets');
       bullet.kill();
       playerBullet.kill();
     }
@@ -317,21 +318,21 @@ grimm
     }
 
     function playerFire() {
-     if (game.time.now > playerBulletTime  && facing === right) {
-          playerBullet = playerBullets.getFirstExists(false);
-          if (playerBullet) {
-              playerBullet.reset(p.x , p.y + 20);
-              playerBullet.body.velocity.x = 600;
-              playerBulletTime = game.time.now + 750;
-          }
+      if (game.time.now > playerBulletTime  && facing === right) {
+        playerBullet = playerBullets.getFirstExists(false);
+        if (playerBullet) {
+          playerBullet.reset(p.x , p.y + 20);
+          playerBullet.body.velocity.x = 600;
+          playerBulletTime = game.time.now + 750;
+        }
       } else if (game.time.now > playerBulletTime && facing === left) {
-          playerBullet = playerBullets.getFirstExists(false);
+        playerBullet = playerBullets.getFirstExists(false);
 
-          if (playerBullet) {
-              playerBullet.reset(p.x , p.y + 20);
-              playerBullet.body.velocity.x = -600;
-              playerBulletTime = game.time.now + 750;
-          }
+        if (playerBullet) {
+          playerBullet.reset(p.x , p.y + 20);
+          playerBullet.body.velocity.x = -600;
+          playerBulletTime = game.time.now + 750;
+        }
       }
     }
 
@@ -360,6 +361,6 @@ grimm
         // Start the 'stateTestmap' state, which restarts the game
         // StateManager.destroy('stateTestmap');
         // game.state.clear('stateTestmap')
-        game.state.start('lvl1');
+      game.state.start('lvl1');
     }
-})
+  });
