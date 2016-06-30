@@ -18,6 +18,7 @@ grimm
       game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
       game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
       game.load.image('pBullet', 'assets/sprites/playerBullet.png');
+      game.load.spritesheet('fallingSpike', 'assets/tilesets/spikesCeiling.png', 35, 35);
       game.load.spritesheet('ninja', 'assets/sprites/ninja.png', 50, 50);
       game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
       game.load.spritesheet('gunSprite', 'assets/sprites/gunSprite.png', 70, 70);
@@ -40,6 +41,7 @@ grimm
     let playerBullet;
     let playerBulletTime = 0;
     let gunsGroup;
+    let fallingSpikesGroup;
     // let guns;
     let score;
     // let health = 1;
@@ -69,14 +71,16 @@ grimm
       // ground.debug = true;
 
       //COLLISION
-      map.setCollisionBetween(1, 2000, true, 'platform');
-      map.setCollisionBetween(1, 2000, true, 'dangerZone');
+      map.setCollisionBetween(1, 2500, true, 'platform');
+      map.setCollisionBetween(1, 2500, true, 'dangerZone');
 
       game.physics.arcade.gravity.y = 600;
 
       createCoinsGroup();
 
       createGunsGroup();
+
+      createFallingSpikes();
 
       createBullets();
 
@@ -225,7 +229,7 @@ grimm
       coinsGroup.enableBody = true;
 
       //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
-      map.createFromObjects('coins', 1476, 'coinSprite', 0, true, false, coinsGroup);
+      map.createFromObjects('coins', 1475, 'coinSprite', 0, true, false, coinsGroup);
 
       //  Add animations to all of the coin sprites
       coinsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3], 8, true);
@@ -238,13 +242,28 @@ grimm
       scoreText.text = `Score: ${score}`;
     }
 
+    function createFallingSpikes() {
+      fallingSpikesGroup = game.add.group();
+      fallingSpikesGroup.enableBody = true;
+      map.createFromObjects('dangerObjects', 1502, 'fallingSpike', 0, true, false, fallingSpikesGroup);
+      // fallingSpikesGroup.callAll('animations.add', 'animations', 'fall', [0], 1, true);
+      // fallingSpikesGroup.callAll('animations.play', 'animations', 'fall');
+
+      fallingSpikesGroup.forEach(function(spike){
+        spike.body.allowGravity = true;
+        spike.spikeTime = 0;
+        // gun.outOfBoundsKill = true;
+        // gun.checkWorldBounds = true;
+      });
+    }
+
     function createGunsGroup() {
       //  Here we create our guns group
       gunsGroup = game.add.group();
       gunsGroup.enableBody = true;
 
       //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
-      map.createFromObjects('dangerObjects', 1502, 'gunSprite', 0, true, false, gunsGroup);
+      map.createFromObjects('dangerObjects', 1501, 'gunSprite', 0, true, false, gunsGroup);
 
       gunsGroup.forEach(function(gun){
         gun.body.allowGravity = false;
@@ -337,8 +356,9 @@ grimm
     }
 
     function losePoints() {
-      if ( Math.abs(score - 10) >= 0) {
-        score -= score - 10;
+      if ( (score - 10) >= 0) {
+        score -= 20;
+        scoreText.text = `Score: ${score}`;
       } else {
         playerDeath();
       }
