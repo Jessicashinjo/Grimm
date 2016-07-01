@@ -44,7 +44,7 @@ Menu Styling
 #menu {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/metalGrunge.jpg');
+  background-image: url('assets/backgrounds/menu1.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -56,7 +56,7 @@ Menu Styling
   font-size: 2.5em;
 }
 
-.menuInfo {
+/*.menuInfo {
   padding-bottom: 2%;
   position: absolute;
   top: 21%;
@@ -69,7 +69,7 @@ Menu Styling
   font-weight: bold;
   color: rgb(77, 8, 8);
   background: rgba(255, 255, 255, .5);
-}
+}*/
 
 .startBtn {
   background-color: white;
@@ -84,7 +84,7 @@ Game View
 .gameView {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/metalGrunge3.jpg');
+  background-image: url('assets/backgrounds/menu2.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

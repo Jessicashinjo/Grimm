@@ -14,7 +14,7 @@ grimm
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
       game.load.image('tileset3', 'assets/tilesets/spikes.png');
-      game.load.image('background', 'assets/tilesets/bg_shroom.png');
+      game.load.image('background', 'assets/backgrounds/gray-honeycomb-pattern-blood2.png');
       game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
       game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
       game.load.image('pBullet', 'assets/sprites/playerBullet.png');
@@ -42,6 +42,8 @@ grimm
     let playerBulletTime = 0;
     let gunsGroup;
     let fallingSpikesGroup;
+    // let spikeTime = 0;
+    let spike;
     // let guns;
     let score;
     // let health = 1;
@@ -137,7 +139,7 @@ grimm
       game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
 
       gunsGroup.forEach(function(gun){
-        if(gun.body.x - p.body.x <= 400) {
+        if(gun.body.x - p.body.x <= 300) {
           gunFire(gun);
         }
       });
@@ -153,6 +155,17 @@ grimm
           playerBullet.kill();
         }
       }, this);
+
+      fallingSpikesGroup.forEach(function(spikeHolder){
+        if(spikeHolder.body.x - p.body.x <= 300) {
+          dropSpikes(spikeHolder);
+        }
+      });
+      fallingSpikesGroup.forEachAlive(function(spike){
+        if(spike.body.x - game.cameraLastX <= 0) {
+          spike.kill();
+        }
+      });
 
 
       p.body.velocity.x = 0;
@@ -245,6 +258,7 @@ grimm
     function createFallingSpikes() {
       fallingSpikesGroup = game.add.group();
       fallingSpikesGroup.enableBody = true;
+      fallingSpikesGroup.createMultiple(10, 'fallingSpike');
       map.createFromObjects('dangerObjects', 1502, 'fallingSpike', 0, true, false, fallingSpikesGroup);
       // fallingSpikesGroup.callAll('animations.add', 'animations', 'fall', [0], 1, true);
       // fallingSpikesGroup.callAll('animations.play', 'animations', 'fall');
@@ -255,6 +269,21 @@ grimm
         // gun.outOfBoundsKill = true;
         // gun.checkWorldBounds = true;
       });
+    }
+
+    function dropSpikes(spikeHolder) {
+      if (game.time.now > spikeHolder.spikeTime)
+      {
+        spike = fallingSpikesGroup.getFirstExists(false);
+        if (spike) {
+          // spike.anchor.setTo(0.5, 0.5);
+          spike.reset(spikeHolder.body.x, spikeHolder.body.y);
+          spikeHolder.spikeTime = game.time.now + 2000;
+          // bullet.body.velocity.x -100;
+          // bullet.body.velocity.y +400;
+          // game.physics.arcade.moveToObject(bullet, p, 500);
+        }
+      }
     }
 
     function createGunsGroup() {
