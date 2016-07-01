@@ -89,10 +89,12 @@ Game View
   background-repeat: no-repeat;
 }
 
-.gameView h1 {
-  margin: 0;
-  padding: 3%;
-  text-align: center;
+.gameView img {
+  display: block;
+  margin: auto;
+  padding: 1%;
+  border-radius: 2em;
+  /*text-align: center;*/
 }
 
 canvas {
