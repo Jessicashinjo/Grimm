@@ -14,7 +14,7 @@ grimm
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
       game.load.image('tileset3', 'assets/tilesets/spikes.png');
-      game.load.image('background', 'assets/backgrounds/gray-honeycomb-pattern-blood2.png');
+      game.load.image('background', 'assets/backgrounds/gray-honeycomb-pattern.jpg');
       game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
       game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
       game.load.image('pBullet', 'assets/sprites/playerBullet.png');
@@ -30,7 +30,7 @@ grimm
     let p;
     let jumpTimer = 0;
     let cursors;
-    let background;
+    // let background;
     let ground;
     let danger;
     // let spikes;
@@ -124,6 +124,9 @@ grimm
       scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
       scoreText.fixedToCamera = true;
 
+      game.cameraLastX = game.camera.x;
+      game.cameraLastY = game.camera.y;
+
 
     }
 
@@ -195,10 +198,14 @@ grimm
         jumpTimer = game.time.now + 500;
       }
 
-      // if(game.camera.x !== game.cameraLastX){
-      //   game.bg.x -= 0.4 * (game.cameraLastX - game.camera.x);
-      //   game.cameraLastX = game.camera.x;
-      // }
+      // game.background.tilePosition.x -= 0.5;
+
+      if(game.camera.x !== game.cameraLastX){
+        game.background.tilePosition.x += 0.5 * (game.cameraLastX - game.camera.x);
+        game.background.tilePosition.y += 0.5 * (game.cameraLastX - game.camera.x);
+        game.cameraLastX = game.camera.x;
+      }
+      // game.background.tilePosition.x -= 0.5;
 
     }
 
@@ -211,7 +218,7 @@ grimm
     }
 
     function camera() {
-      background.fixedToCamera = true;
+      game.background.fixedToCamera = true;
       game.camera.follow(p);
     }
 
@@ -221,7 +228,7 @@ grimm
     }
 
     function createLevel1() {
-      background = game.add.tileSprite(0, 0, 1000, 500, 'background');
+      game.background = game.add.tileSprite(0, 0, 1920, 1200, 'background');
       map = game.add.tilemap('basic_map');
       map.addTilesetImage('sheetbw', 'tileset');
       map.addTilesetImage('nautical_tilesheetbw', 'tileset2');
