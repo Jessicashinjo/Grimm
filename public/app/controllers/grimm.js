@@ -14,7 +14,7 @@ grimm
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
       game.load.image('tileset3', 'assets/tilesets/spikes.png');
-      game.load.image('background', 'assets/backgrounds/gray-honeycomb-pattern.jpg');
+      game.load.image('background', 'assets/backgrounds/bloodPattern.png');
       game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
       game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
       game.load.image('pBullet', 'assets/sprites/playerBullet.png');
@@ -22,6 +22,7 @@ grimm
       game.load.spritesheet('ninja', 'assets/sprites/ninja.png', 50, 50);
       game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
       game.load.spritesheet('gunSprite', 'assets/sprites/gunSprite.png', 70, 70);
+      game.load.spritesheet('shroomSprite', 'assets/sprites/mushroom.png', 35, 34);
 
       // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
     }
@@ -41,6 +42,7 @@ grimm
     let playerBullet;
     let playerBulletTime = 0;
     let gunsGroup;
+    let shroomGroup;
     let fallingSpikesGroup;
     // let spikeTime = 0;
     let spike;
@@ -87,6 +89,8 @@ grimm
       createBullets();
 
       createPlayerBullets();
+
+      createShroomGroup();
       /****************
       ****************/
       // maceGroup = game.add.group();
@@ -127,6 +131,8 @@ grimm
       game.cameraLastX = game.camera.x;
       game.cameraLastY = game.camera.y;
 
+      // p.body.bodyLastY = p.body.position.y;
+
 
     }
 
@@ -136,6 +142,7 @@ grimm
       game.physics.arcade.collide(p, danger, playerDeath);
       game.physics.arcade.collide(p, gunsGroup);
       game.physics.arcade.collide(coinsGroup, ground);
+      game.physics.arcade.collide(shroomGroup, ground);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
       // game.physics.arcade.overlap(playerBullet, bullets, playerBulletKill, null, this);
       game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
@@ -198,11 +205,15 @@ grimm
         jumpTimer = game.time.now + 500;
       }
 
+      // if (p.body.position.y !== p.body.lastY) {
+      //   game.background.tilePosition.y -= 0.5;
+      // }
+
       // game.background.tilePosition.x -= 0.5;
 
       if(game.camera.x !== game.cameraLastX){
         game.background.tilePosition.x += 0.5 * (game.cameraLastX - game.camera.x);
-        game.background.tilePosition.y += 0.5 * (game.cameraLastX - game.camera.x);
+        // game.background.tilePosition.y += 0.5 * (game.cameraLastX - game.camera.x);
         game.cameraLastX = game.camera.x;
       }
       // game.background.tilePosition.x -= 0.5;
@@ -260,6 +271,21 @@ grimm
       coin.kill();
       score += 10;
       scoreText.text = `Score: ${score}`;
+    }
+
+    function createShroomGroup() {
+      shroomGroup = game.add.group();
+      shroomGroup.enableBody = true;
+
+      map.createFromObjects('Enemy', 1474, 'shroomSprite', 0, true, false, shroomGroup);
+
+      shroomGroup.callAll('animations.add', 'animations', 'eyes', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 5, true);
+      shroomGroup.callAll('animations.play', 'animations', 'eyes');
+
+
+
+
+
     }
 
     function createFallingSpikes() {
