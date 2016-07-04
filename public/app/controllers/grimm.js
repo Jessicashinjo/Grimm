@@ -22,7 +22,7 @@ grimm
       game.load.spritesheet('ninja', 'assets/sprites/ninja.png', 50, 50);
       game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
       game.load.spritesheet('gunSprite', 'assets/sprites/gunSprite.png', 70, 70);
-      game.load.spritesheet('shroomSprite', 'assets/sprites/mushroom.png', 35, 34);
+      game.load.spritesheet('shroomSprite', 'assets/sprites/mushroom2.png', 35, 34);
 
       // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
     }
@@ -43,6 +43,7 @@ grimm
     let playerBulletTime = 0;
     let gunsGroup;
     let shroomGroup;
+    let enemyCollision;
     let fallingSpikesGroup;
     // let spikeTime = 0;
     let spike;
@@ -77,6 +78,7 @@ grimm
       //COLLISION
       map.setCollisionBetween(1, 2500, true, 'platform');
       map.setCollisionBetween(1, 2500, true, 'dangerZone');
+      map.setCollisionBetween(1, 2500, true, 'enemyCollision');
 
       game.physics.arcade.gravity.y = 600;
 
@@ -143,8 +145,10 @@ grimm
       game.physics.arcade.collide(p, gunsGroup);
       game.physics.arcade.collide(coinsGroup, ground);
       game.physics.arcade.collide(shroomGroup, ground);
+      game.physics.arcade.collide(shroomGroup, enemyCollision);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
-      // game.physics.arcade.overlap(playerBullet, bullets, playerBulletKill, null, this);
+      game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
+      game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
       game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
       game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
 
@@ -178,6 +182,7 @@ grimm
       });
 
 
+
       p.body.velocity.x = 0;
 
         /* actual movement */
@@ -204,6 +209,8 @@ grimm
         p.body.velocity.y = -350;
         jumpTimer = game.time.now + 500;
       }
+
+      shroomCollision();
 
       // if (p.body.position.y !== p.body.lastY) {
       //   game.background.tilePosition.y -= 0.5;
@@ -249,6 +256,8 @@ grimm
       map.createLayer('background');
       danger = map.createLayer('dangerZone');
       ground = map.createLayer('platform');
+      enemyCollision = map.createLayer('enemyCollision');
+      enemyCollision.alpha = 0;
       // health = map.createLayer('health');
 
       ground.resizeWorld();
@@ -279,13 +288,43 @@ grimm
 
       map.createFromObjects('Enemy', 1474, 'shroomSprite', 0, true, false, shroomGroup);
 
+      shroomGroup.forEach( (shroom) => {
+        shroom.body.velocity.x = 100;
+      });
+
       shroomGroup.callAll('animations.add', 'animations', 'eyes', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 5, true);
       shroomGroup.callAll('animations.play', 'animations', 'eyes');
+    }
 
+    function shroomCollision() {
+      shroomGroup.forEach( (shroom) => {
+        if (shroom.body.blocked.right) {
+          shroom.body.velocity.x = -200;
+        } else if (shroom.body.blocked.left) {
+          shroom.body.velocity.x = 200;
+        }
+      });
+    }
 
+    function shroomDeath(bullet, shroom) {
+      bullet.kill();
+      shroom.kill();
+      score += 20;
+      scoreText.text = `Score: ${score}`;
+    }
 
+    function createWhiteSaws() {
+      whiteSawsGroup = game.add.group();
+      whiteSawsGroup.enableBody = true;
 
+      map.createFromObjects('Enemy', 1474, 'shroomSprite', 0, true, false, shroomGroup);
 
+      shroomGroup.forEach( (shroom) => {
+        shroom.body.velocity.x = 100;
+      });
+
+      shroomGroup.callAll('animations.add', 'animations', 'eyes', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 5, true);
+      shroomGroup.callAll('animations.play', 'animations', 'eyes');
     }
 
     function createFallingSpikes() {
