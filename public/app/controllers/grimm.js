@@ -1,5 +1,5 @@
 grimm
-  .controller('GameCtrl', function () {
+  .controller('GameCtrl', function ($scope, $location) {
     var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'gameCanvas');
 
     // let game = gameInit;
@@ -25,8 +25,7 @@ grimm
       game.load.spritesheet('shroomSprite', 'assets/sprites/mushroom2.png', 35, 34);
       game.load.spritesheet('whiteSaws', 'assets/sprites/whiteSaws.png', 75, 75);
       game.load.spritesheet('redSaws', 'assets/sprites/redSaws.png', 75, 75);
-
-      // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
+      game.load.spritesheet('leverSprite', 'assets/sprites/laserSprite.png', 70, 70);
     }
 
     let map;
@@ -36,7 +35,6 @@ grimm
     // let background;
     let ground;
     let danger;
-    // let spikes;
     let coinsGroup;
     let bullet;
     let bullets;
@@ -48,14 +46,16 @@ grimm
     let stillSawsGroup;
     let movingSawsGroup;
     let enemyCollision;
-    let fallingSpikesGroup;
+    let lever;
+    // let fallingSpikesGroup;
     // let spikeTime = 0;
-    let spike;
+    // let spike;
     // let guns;
     let score;
     // let health = 1;
     // let healthText;
     let scoreText;
+    let winText;
     let right = 16;
     let left = 22;
     let facing;
@@ -90,7 +90,7 @@ grimm
 
       createGunsGroup();
 
-      createFallingSpikes();
+      // createFallingSpikes();
 
       createBullets();
 
@@ -101,6 +101,8 @@ grimm
       createStillSaws();
 
       createMovingSaws();
+
+      createLever();
 
       /****************
       ****************/
@@ -145,12 +147,14 @@ grimm
       game.physics.arcade.collide(shroomGroup, enemyCollision);
       game.physics.arcade.collide(stillSawsGroup, enemyCollision);
       game.physics.arcade.collide(movingSawsGroup, enemyCollision);
+      game.physics.arcade.collide(lever, ground);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
       game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
       game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
       game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
       game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
+      game.physics.arcade.overlap(p, lever, flipLever, null, this);
 
       gunsGroup.forEach(function(gun){
         if(gun.body.x - p.body.x <= 300) {
@@ -170,16 +174,16 @@ grimm
         }
       }, this);
 
-      fallingSpikesGroup.forEach(function(spikeHolder){
-        if(spikeHolder.body.x - p.body.x <= 300) {
-          dropSpikes(spikeHolder);
-        }
-      });
-      fallingSpikesGroup.forEachAlive(function(spike){
-        if(spike.body.x - game.cameraLastX <= 0) {
-          spike.kill();
-        }
-      });
+      // fallingSpikesGroup.forEach(function(spikeHolder){
+      //   if(spikeHolder.body.x - p.body.x <= 300) {
+      //     dropSpikes(spikeHolder);
+      //   }
+      // });
+      // fallingSpikesGroup.forEachAlive(function(spike){
+      //   if(spike.body.x - game.cameraLastX <= 0) {
+      //     spike.kill();
+      //   }
+      // });
 
 
 
@@ -262,6 +266,43 @@ grimm
       // health = map.createLayer('health');
 
       ground.resizeWorld();
+    }
+
+    function createLever() {
+      lever = game.add.group();
+      lever.enableBody = true;
+      map.createFromObjects('Enemy', 1482, 'leverSprite', 0, true, false, lever);
+      lever.callAll('animations.add', 'animations', 'flip', [0, 1], 3, false);
+    }
+
+    function flipLever() {
+      lever.callAll('animations.play', 'animations', 'flip');
+      gameWin();
+    }
+
+    function gameWin() {
+      winText = game.add.text('You lived!', { fontSize: '4em', fill: '#FFF', align: 'right' });
+      winText = game.add.text(game.camera.lastX, game.camera.lastY, 'YOU SURVIVED! \n-click the stats button-');
+
+      //  Centers the text
+      // winText.anchor.set(0.5, 0.5);
+      winText.align = 'right';
+      // winText.padding = '5%';
+      //  Our font + size
+      winText.font = 'Arial';
+      winText.fontWeight = 'bold';
+      winText.fontSize = 50;
+
+      //  Here we create a linear gradient on the Text context.
+      //  This uses the exact same method of creating a gradient as you do on a normal Canvas context.
+      var textGradient = winText.context.createLinearGradient(0, 0, 0, winText.height);
+
+      //  Add in 2 color stops
+      textGradient.addColorStop(0, '#e31029');
+      textGradient.addColorStop(1, '#810e22');
+
+      //  And apply to the Text
+      winText.fill = textGradient;
     }
 
     function createCoinsGroup() {
@@ -354,36 +395,36 @@ grimm
       });
     }
 
-    function createFallingSpikes() {
-      fallingSpikesGroup = game.add.group();
-      fallingSpikesGroup.enableBody = true;
-      fallingSpikesGroup.createMultiple(10, 'fallingSpike');
-      map.createFromObjects('dangerObjects', 1502, 'fallingSpike', 0, true, false, fallingSpikesGroup);
-      // fallingSpikesGroup.callAll('animations.add', 'animations', 'fall', [0], 1, true);
-      // fallingSpikesGroup.callAll('animations.play', 'animations', 'fall');
-
-      fallingSpikesGroup.forEach(function(spike){
-        spike.body.allowGravity = true;
-        spike.spikeTime = 0;
-        // gun.outOfBoundsKill = true;
-        // gun.checkWorldBounds = true;
-      });
-    }
-
-    function dropSpikes(spikeHolder) {
-      if (game.time.now > spikeHolder.spikeTime)
-      {
-        spike = fallingSpikesGroup.getFirstExists(false);
-        if (spike) {
-          // spike.anchor.setTo(0.5, 0.5);
-          spike.reset(spikeHolder.body.x, spikeHolder.body.y);
-          spikeHolder.spikeTime = game.time.now + 2000;
-          // bullet.body.velocity.x -100;
-          // bullet.body.velocity.y +400;
-          // game.physics.arcade.moveToObject(bullet, p, 500);
-        }
-      }
-    }
+    // function createFallingSpikes() {
+    //   fallingSpikesGroup = game.add.group();
+    //   fallingSpikesGroup.enableBody = true;
+    //   fallingSpikesGroup.createMultiple(10, 'fallingSpike');
+    //   map.createFromObjects('dangerObjects', 1502, 'fallingSpike', 0, true, false, fallingSpikesGroup);
+    //   // fallingSpikesGroup.callAll('animations.add', 'animations', 'fall', [0], 1, true);
+    //   // fallingSpikesGroup.callAll('animations.play', 'animations', 'fall');
+    //
+    //   fallingSpikesGroup.forEach(function(spike){
+    //     spike.body.allowGravity = true;
+    //     spike.spikeTime = 0;
+    //     // gun.outOfBoundsKill = true;
+    //     // gun.checkWorldBounds = true;
+    //   });
+    // }
+    //
+    // function dropSpikes(spikeHolder) {
+    //   if (game.time.now > spikeHolder.spikeTime)
+    //   {
+    //     spike = fallingSpikesGroup.getFirstExists(false);
+    //     if (spike) {
+    //       // spike.anchor.setTo(0.5, 0.5);
+    //       spike.reset(spikeHolder.body.x, spikeHolder.body.y);
+    //       spikeHolder.spikeTime = game.time.now + 2000;
+    //       // bullet.body.velocity.x -100;
+    //       // bullet.body.velocity.y +400;
+    //       // game.physics.arcade.moveToObject(bullet, p, 500);
+    //     }
+    //   }
+    // }
 
     function createGunsGroup() {
       //  Here we create our guns group
@@ -438,18 +479,12 @@ grimm
       losePoints();
     }
 
-    // function playerBulletKill() {
-    //   playerBullet.kill();
-    // }
-
     function enemyPlayerBulletKill() {
-      // console.log('kill all the bullets');
       bullet.kill();
       playerBullet.kill();
     }
 
     function gunFire (gun) {
-      // console.log('I am the gun', gun.x);
       if (game.time.now > gun.gunTime)
       {
         bullet = bullets.getFirstExists(false);
@@ -457,8 +492,6 @@ grimm
           bullet.anchor.setTo(0.5, 0.5);
           bullet.reset(gun.body.x +5, gun.body.y +20);
           gun.gunTime = game.time.now + 2000;
-          // bullet.body.velocity.x -100;
-          // bullet.body.velocity.y +400;
           game.physics.arcade.moveToObject(bullet, p, 500);
         }
       }
@@ -511,4 +544,9 @@ grimm
         // game.state.clear('stateTestmap')
       game.state.start('lvl1');
     }
+
+    $scope.go = function ( path ) {
+      $location.path( path );
+    };
+
   });

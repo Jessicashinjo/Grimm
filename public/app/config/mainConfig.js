@@ -1,22 +1,14 @@
 grimm
   .config(() => (
     firebase.initializeApp({
-      apiKey: "AIzaSyCI5fY2pyhcTSQKAOFwv7XEz7kMhmV8x8U",
-      authDomain: "grimm-6edf6.firebaseapp.com",
-      databaseURL: "https://grimm-6edf6.firebaseio.com",
-      storageBucket: "grimm-6edf6.appspot.com",
+      apiKey: 'AIzaSyCI5fY2pyhcTSQKAOFwv7XEz7kMhmV8x8U',
+      authDomain: 'grimm-6edf6.firebaseapp.com',
+      databaseURL: 'https://grimm-6edf6.firebaseio.com',
+      storageBucket: 'grimm-6edf6.appspot.com'
     })
   ))
   .config(($routeProvider) => {
-  $routeProvider
-    // .when('/', {
-    //   templateUrl: 'index.html'
-    // })
-    .when('/login', {
-      templateUrl: 'app/partials/login.html',
-      controller: 'LoginCtrl',
-      controllerAs: 'login'
-    })
+    $routeProvider
     .when('/menu', {
       templateUrl: 'app/partials/menu.html',
       controller: 'MenuCtrl',
@@ -32,10 +24,5 @@ grimm
       controller: 'StatsCtrl',
       controllerAs: 'stats'
     })
-    // .when('/hello/:name', {
-    //   templateUrl: 'app/partials/hello-person.html',
-    //   controller: 'HelloPersonCtrl',
-    //   controllerAs: 'helloPerson',
-    // })
-    .otherwise('/login')
-})
+    .otherwise('/menu');
+  });
