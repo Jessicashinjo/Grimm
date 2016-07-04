@@ -23,6 +23,8 @@ grimm
       game.load.spritesheet('coinSprite', 'assets/sprites/coin.png', 25, 25);
       game.load.spritesheet('gunSprite', 'assets/sprites/gunSprite.png', 70, 70);
       game.load.spritesheet('shroomSprite', 'assets/sprites/mushroom2.png', 35, 34);
+      game.load.spritesheet('whiteSaws', 'assets/sprites/whiteSaws.png', 75, 75);
+      game.load.spritesheet('redSaws', 'assets/sprites/redSaws.png', 75, 75);
 
       // game.load.spritesheet('maceSprite', 'assets/sprites/maceSprite.png', 330, 200);
     }
@@ -43,6 +45,8 @@ grimm
     let playerBulletTime = 0;
     let gunsGroup;
     let shroomGroup;
+    let stillSawsGroup;
+    let movingSawsGroup;
     let enemyCollision;
     let fallingSpikesGroup;
     // let spikeTime = 0;
@@ -93,20 +97,13 @@ grimm
       createPlayerBullets();
 
       createShroomGroup();
+
+      createStillSaws();
+
+      createMovingSaws();
+
       /****************
       ****************/
-      // maceGroup = game.add.group();
-      // maceGroup.enableBody = true;
-      // // game.physics.enable( [ maceGroup ], Phaser.Physics.ARCADE);
-      //
-      // //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the mace group
-      // map.createFromObjects('dangerObjects', 1480, 'maceSprite', 0, true, false, maceGroup);
-      //
-      // maceGroup.forEach(function(mace){mace.body.allowGravity = false;  });
-      //
-      // //  Add animations to all of the coin sprites
-      // maceGroup.callAll('animations.add', 'animations', 'swing', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], 10, true);
-      // maceGroup.callAll('animations.play', 'animations', 'swing');
 
       //  Add a sprite
       p = game.add.sprite(100, 300, 'ninja');
@@ -146,8 +143,11 @@ grimm
       game.physics.arcade.collide(coinsGroup, ground);
       game.physics.arcade.collide(shroomGroup, ground);
       game.physics.arcade.collide(shroomGroup, enemyCollision);
+      game.physics.arcade.collide(stillSawsGroup, enemyCollision);
+      game.physics.arcade.collide(movingSawsGroup, enemyCollision);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
       game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
+      game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
       game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
       game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
@@ -211,6 +211,7 @@ grimm
       }
 
       shroomCollision();
+      sawCollision();
 
       // if (p.body.position.y !== p.body.lastY) {
       //   game.background.tilePosition.y -= 0.5;
@@ -313,18 +314,44 @@ grimm
       scoreText.text = `Score: ${score}`;
     }
 
-    function createWhiteSaws() {
-      whiteSawsGroup = game.add.group();
-      whiteSawsGroup.enableBody = true;
+    function createStillSaws() {
+      stillSawsGroup = game.add.group();
+      stillSawsGroup.enableBody = true;
 
-      map.createFromObjects('Enemy', 1474, 'shroomSprite', 0, true, false, shroomGroup);
+      map.createFromObjects('Enemy', 773, 'whiteSaws', 0, true, false, stillSawsGroup);
 
-      shroomGroup.forEach( (shroom) => {
-        shroom.body.velocity.x = 100;
+      stillSawsGroup.forEach( (saw) => {
+        saw.body.allowGravity = true;
       });
 
-      shroomGroup.callAll('animations.add', 'animations', 'eyes', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 5, true);
-      shroomGroup.callAll('animations.play', 'animations', 'eyes');
+      stillSawsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2], 10, true);
+      stillSawsGroup.callAll('animations.play', 'animations', 'spin');
+    }
+
+    function createMovingSaws() {
+      movingSawsGroup = game.add.group();
+      movingSawsGroup.enableBody = true;
+
+      map.createFromObjects('Enemy', 738, 'redSaws', 0, true, false, movingSawsGroup);
+
+      movingSawsGroup.forEach( (saw) => {
+        saw.body.velocity.y = 100;
+        saw.body.velocity.x = 0;
+        saw.body.allowGravity = false;
+      });
+
+      movingSawsGroup.callAll('animations.add', 'animations', 'spin', [0, 1, 2], 12, true);
+      movingSawsGroup.callAll('animations.play', 'animations', 'spin');
+    }
+
+    function sawCollision() {
+      movingSawsGroup.forEach( (saw) => {
+        if (saw.body.blocked.up) {
+          saw.body.velocity.y = 100;
+        } else if (saw.body.blocked.down) {
+          saw.body.velocity.y = -100;
+        }
+      });
     }
 
     function createFallingSpikes() {
@@ -364,7 +391,7 @@ grimm
       gunsGroup.enableBody = true;
 
       //  And now we convert all of the Tiled objects with an ID of 1476 into sprites within the coins group
-      map.createFromObjects('dangerObjects', 1501, 'gunSprite', 0, true, false, gunsGroup);
+      map.createFromObjects('dangerObjects', 1479, 'gunSprite', 0, true, false, gunsGroup);
 
       gunsGroup.forEach(function(gun){
         gun.body.allowGravity = false;
