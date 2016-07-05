@@ -26,6 +26,7 @@ grimm
       game.load.spritesheet('whiteSaws', 'assets/sprites/whiteSaws.png', 75, 75);
       game.load.spritesheet('redSaws', 'assets/sprites/redSaws.png', 75, 75);
       game.load.spritesheet('leverSprite', 'assets/sprites/laserSprite.png', 70, 70);
+      game.load.spritesheet('stepSprite', 'assets/sprites/fallingStep.png', 35, 35);
     }
 
     let map;
@@ -47,6 +48,7 @@ grimm
     let movingSawsGroup;
     let enemyCollision;
     let lever;
+    let fallingStepsGroup;
     // let fallingSpikesGroup;
     // let spikeTime = 0;
     // let spike;
@@ -55,7 +57,7 @@ grimm
     // let health = 1;
     // let healthText;
     let scoreText;
-    let winText;
+    // let winText;
     let right = 16;
     let left = 22;
     let facing;
@@ -104,6 +106,8 @@ grimm
 
       createLever();
 
+      createFallingSteps();
+
       /****************
       ****************/
 
@@ -148,9 +152,10 @@ grimm
       game.physics.arcade.collide(stillSawsGroup, enemyCollision);
       game.physics.arcade.collide(movingSawsGroup, enemyCollision);
       game.physics.arcade.collide(lever, ground);
+      game.physics.arcade.collide(p, fallingStepsGroup);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
-      game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
-      game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
+      // game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
+      // game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
       game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
       game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
@@ -281,28 +286,45 @@ grimm
     }
 
     function gameWin() {
-      winText = game.add.text('You lived!', { fontSize: '4em', fill: '#FFF', align: 'right' });
-      winText = game.add.text(game.camera.lastX, game.camera.lastY, 'YOU SURVIVED! \n-click the stats button-');
+      score += 300;
+      scoreText = `Score: ${score}`;
+      //  \n YOU SURVIVED \n-click the stats button to continue-`;
+      // scoreText.font = 'Lucida Console';
+      // scoreText.fontSize = '40px';
+
+      // var textGradient = scoreText.context.createLinearGradient(0, 0, 0, scoreText.height);
+      //
+      // //  Add in 2 color stops
+      // textGradient.addColorStop(0, '#e31029');
+      // textGradient.addColorStop(1, '#810e22');
+      //
+      // //  And apply to the Text
+      // scoreText.fill = textGradient;
+
+
+      // winText = game.add.text('YOU SURVIVED! \n-click the stats button-',
+      // {font: 'Lucida Console', fontSize: '4em'});
+
+
+
+      // winText.fixedToCamera = true;
+      // winText.cameraOffset.setTo(250, 500);
+
+
+
+      // scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+      // scoreText.fixedToCamera = true;
 
       //  Centers the text
       // winText.anchor.set(0.5, 0.5);
-      winText.align = 'right';
+      // winText.align = 'right';
       // winText.padding = '5%';
       //  Our font + size
-      winText.font = 'Arial';
-      winText.fontWeight = 'bold';
-      winText.fontSize = 50;
+      // winText.font = 'Arial';
 
       //  Here we create a linear gradient on the Text context.
       //  This uses the exact same method of creating a gradient as you do on a normal Canvas context.
-      var textGradient = winText.context.createLinearGradient(0, 0, 0, winText.height);
 
-      //  Add in 2 color stops
-      textGradient.addColorStop(0, '#e31029');
-      textGradient.addColorStop(1, '#810e22');
-
-      //  And apply to the Text
-      winText.fill = textGradient;
     }
 
     function createCoinsGroup() {
@@ -425,6 +447,16 @@ grimm
     //     }
     //   }
     // }
+
+    function createFallingSteps() {
+      fallingStepsGroup = game.add.group();
+      fallingStepsGroup.enableBody = true;
+      map.createFromObjects('dangerObjects', 181, 'stepSprite', 0, true, false, fallingStepsGroup);
+
+      fallingStepsGroup.forEach(function (step) {
+        step.body.allowGravity = false;
+      });
+    }
 
     function createGunsGroup() {
       //  Here we create our guns group
