@@ -60,7 +60,7 @@ grimm
     let score;
     // let health = 1;
     // let healthText;
-    let scoreText;
+    // let scoreText;
     // let winText;
     let right = 16;
     let left = 22;
@@ -134,8 +134,8 @@ grimm
       cursors = game.input.keyboard.createCursorKeys();
       shoot = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-      scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
-      scoreText.fixedToCamera = true;
+      // scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+      // scoreText.fixedToCamera = true;
 
       timer = game.time.create();
       timer.add(Phaser.Timer.MINUTE * 1 + Phaser.Timer.SECOND * 30, playerDeath, this);
@@ -304,7 +304,12 @@ grimm
 
     function gameWin() {
       score += 300;
-      scoreText = `Score: ${score}`;
+      $scope.currentTime;
+      console.log(currentTime);
+      $scope.$apply(function() { $location.path("/stats"); })
+      };
+
+      // scoreText = `Score: ${score}`;
       //  \n YOU SURVIVED \n-click the stats button to continue-`;
       // scoreText.font = 'Lucida Console';
       // scoreText.fontSize = '40px';
@@ -342,7 +347,7 @@ grimm
       //  Here we create a linear gradient on the Text context.
       //  This uses the exact same method of creating a gradient as you do on a normal Canvas context.
 
-    }
+
 
     function createCoinsGroup() {
       //  Here we create our coins group
@@ -360,9 +365,9 @@ grimm
     function collectCoin(p, coin) {
       coin.kill();
       score += 10;
-      scoreText.text = `Score: ${score}`;
+      // scoreText.text = `Score: ${score}`;
       currentTime += 5;
-      console.log(currentTime);
+      // console.log(currentTime);
       // timeText.text = `Time Remaining: ${currentTime}`;
       // game.debug.text('Time Remaining:' + (Math.round(timer.duration / 1000)), 20, 70, "#fff");
     }
@@ -395,7 +400,7 @@ grimm
       bullet.kill();
       shroom.kill();
       score += 20;
-      scoreText.text = `Score: ${score}`;
+      // scoreText.text = `Score: ${score}`;
     }
 
     function createStillSaws() {
@@ -529,7 +534,7 @@ grimm
 
     function bulletKill() {
       bullet.kill();
-      losePoints();
+      loseTime();
     }
 
     function enemyPlayerBulletKill() {
@@ -569,10 +574,10 @@ grimm
       }
     }
 
-    function losePoints() {
-      if ( (score - 10) >= 0) {
-        score -= 20;
-        scoreText.text = `Score: ${score}`;
+    function loseTime() {
+      if ( (currentTime - 10) >= 0) {
+        currentTime -= 10;
+        // scoreText.text = `Score: ${score}`;
       } else {
         playerDeath();
       }
@@ -585,19 +590,20 @@ grimm
       // enemy.body.x = -200000;
       p.body.y -= 75;
       p.kill();
-      restartGame();
-      score = 0;
       timer.stop();
-      // --hitCount;
-      // healthText.text = 'Health: ' + hitCount;
+      restartGame();
+      currentTime = 90;
+      score = 0;
+
     }
 
     function timeClock() {
-      if (timer.running) {
+      if (timer.running && currentTime > 0) {
         timeText.text = `Time Remaining: ${currentTime}`;
       }
       else {
         timeText.text = 'Your time ran out!';
+        playerDeath();
         // game.add.text(50, 100, "Your time ran out!", 2, 14, "#0f0");
       }
     }
