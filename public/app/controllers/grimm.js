@@ -14,7 +14,7 @@ grimm
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
       game.load.image('tileset3', 'assets/tilesets/spikes.png');
-      game.load.image('background', 'assets/backgrounds/bloodPattern.png');
+      game.load.image('background', 'assets/backgrounds/bloodPattern1.png');
       game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
       game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
       game.load.image('pBullet', 'assets/sprites/playerBullet.png');
@@ -49,6 +49,10 @@ grimm
     let enemyCollision;
     let lever;
     let fallingStepsGroup;
+    let timer;
+    let timeText;
+    let addTime;
+    let currentTime = 90;
     // let fallingSpikesGroup;
     // let spikeTime = 0;
     // let spike;
@@ -133,14 +137,20 @@ grimm
       scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
       scoreText.fixedToCamera = true;
 
+      timer = game.time.create();
+      timer.add(Phaser.Timer.MINUTE * 1 + Phaser.Timer.SECOND * 30, playerDeath, this);
+      timer.start();
+
+      timeText = game.add.text(50, 100, `Time Remaining: ${currentTime}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+      timeText.fixedToCamera = true;
+
       game.cameraLastX = game.camera.x;
       game.cameraLastY = game.camera.y;
 
       // p.body.bodyLastY = p.body.position.y;
 
-
+      timer.loop(1000, () => currentTime--);
     }
-
 
     function update() {
       game.physics.arcade.collide(p, ground);
@@ -154,6 +164,7 @@ grimm
       game.physics.arcade.collide(lever, ground);
       game.physics.arcade.collide(p, fallingStepsGroup);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
+      // game.physics.arcade.overlap(p, stillSawsGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
@@ -222,6 +233,8 @@ grimm
       shroomCollision();
       sawCollision();
 
+
+
       // if (p.body.position.y !== p.body.lastY) {
       //   game.background.tilePosition.y -= 0.5;
       // }
@@ -235,13 +248,17 @@ grimm
       }
       // game.background.tilePosition.x -= 0.5;
 
+
+
+      timeClock();
     }
 
     function render() {
-
+      // game.debug.text('Time: ' + parseFloat(this.game.time.totalElapsedSeconds()).toFixed(1), 32, 32);
         // game.debug.body(p);
         // game.debug.bodyInfo(p, 32, 320);
         // game.debug.body(bullets.children[0])
+
 
     }
 
@@ -344,6 +361,10 @@ grimm
       coin.kill();
       score += 10;
       scoreText.text = `Score: ${score}`;
+      currentTime += 5;
+      console.log(currentTime);
+      // timeText.text = `Time Remaining: ${currentTime}`;
+      // game.debug.text('Time Remaining:' + (Math.round(timer.duration / 1000)), 20, 70, "#fff");
     }
 
     function createShroomGroup() {
@@ -566,8 +587,19 @@ grimm
       p.kill();
       restartGame();
       score = 0;
+      timer.stop();
       // --hitCount;
       // healthText.text = 'Health: ' + hitCount;
+    }
+
+    function timeClock() {
+      if (timer.running) {
+        timeText.text = `Time Remaining: ${currentTime}`;
+      }
+      else {
+        timeText.text = 'Your time ran out!';
+        // game.add.text(50, 100, "Your time ran out!", 2, 14, "#0f0");
+      }
     }
 
     function restartGame() {

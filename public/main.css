@@ -44,7 +44,7 @@ Menu Styling
 #menu {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/menu1.png');
+  background-image: url('assets/backgrounds/menu1.2.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -84,7 +84,7 @@ Game View
 .gameView {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/menu2.png');
+  background-image: url('assets/backgrounds/menu2.2.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
