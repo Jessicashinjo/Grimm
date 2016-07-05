@@ -1,0 +1,20 @@
+grimm
+  .config(($routeProvider) => {
+    $routeProvider
+    .when('/menu', {
+      templateUrl: 'app/partials/menu.html',
+      controller: 'MenuCtrl',
+      controllerAs: 'menu'
+    })
+    .when('/grimm', {
+      templateUrl: 'app/partials/grimm.html',
+      controller: 'GameCtrl',
+      controllerAs: 'game'
+    })
+    .when('/stats', {
+      templateUrl: 'app/partials/stats.html',
+      controller: 'StatsCtrl',
+      controllerAs: 'stats'
+    })
+    .otherwise('/menu');
+  });

@@ -1,0 +1,28 @@
+{"frames": {
+
+"laserSwitch.png":
+{
+	"frame": {"x":0,"y":0,"w":70,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":70},
+	"sourceSize": {"w":70,"h":70}
+},
+"laserSwitchOn.png":
+{
+	"frame": {"x":70,"y":0,"w":70,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":70},
+	"sourceSize": {"w":70,"h":70}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "laserSprite.png",
+	"format": "RGBA8888",
+	"size": {"w":140,"h":70},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:2901c0ef237b1e857f31642f5b030991:0c35faa18eb535e6f7f14ffe686a254e:8d7383027b3d1502102cd30872a1e823$"
+}
+}
