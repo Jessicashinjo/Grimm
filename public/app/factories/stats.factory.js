@@ -19,11 +19,6 @@ grimm
         }, function(error) {
           // An error happened.
         });
-      },
-      currentUser() {
-        return
-        firebase.auth().currentUser
-
       }
     };
 

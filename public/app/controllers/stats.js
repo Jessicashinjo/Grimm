@@ -1,6 +1,7 @@
 angular.module('grimm')
-  .controller('StatsCtrl', function (statsFactory) {
+  .controller('StatsCtrl', function (statsFactory, AuthFactory) {
     // console.log('stats Controller')
+    let user;
     const stats = this;
     stats.leaderboardData = null;
     statsFactory.getLeaderboard()
@@ -8,6 +9,9 @@ angular.module('grimm')
         stats.leaderboardData = response.data;
         console.log('controller data', stats.leaderboardData);
       });
+
+    user = AuthFactory.currentUser();
+    console.log("current user", user);
   });
 
   // .then( (response) => {

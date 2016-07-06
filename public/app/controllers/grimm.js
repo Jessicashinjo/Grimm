@@ -10,6 +10,9 @@ grimm
 
 
     function preload() {
+      game.load.audio('backgroundMusic', ['assets/audio/Dungeon-Background.mp3']);
+      game.load.audio('playerHurt', ['assets/audio/playerHurt.wav']);
+      game.load.audio('playerLoss', ['assets/audio/youLose.wav']);
       game.load.tilemap('basic_map', 'assets/maps/grimm_level1.json', null, Phaser.Tilemap.TILED_JSON);
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
@@ -29,6 +32,9 @@ grimm
       game.load.spritesheet('stepSprite', 'assets/sprites/fallingStep.png', 35, 35);
     }
 
+    let music;
+    let hurtSound;
+    let youLose;
     let map;
     let p;
     let jumpTimer = 0;
@@ -73,6 +79,12 @@ grimm
     //   };
 
     function create() {
+      music = game.add.audio('backgroundMusic');
+      hurtSound = game.add.audio('playerHurt');
+      youLose = game.add.audio('playerLoss');
+
+      music.play();
+
       //  Enable Arcade physics
       game.physics.startSystem(Phaser.Physics.ARCADE);
       score = 0;
@@ -533,6 +545,7 @@ grimm
     }
 
     function bulletKill() {
+      hurtSound.play();
       bullet.kill();
       loseTime();
     }
@@ -588,6 +601,7 @@ grimm
       // player.animations.play('damage');
       // explosionSound.play();
       // enemy.body.x = -200000;
+      youLose.play();
       p.body.y -= 75;
       p.kill();
       timer.stop();

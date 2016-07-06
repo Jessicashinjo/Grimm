@@ -1,39 +1,49 @@
 'use strict';
 
-grimm.factory("AuthFactory", function(firebaseURL, $location) {
+grimm.factory('AuthFactory', function(firebaseURL, $location, $timeout) {
+  let userId = null;
+  let token = null;
+
   firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    userId = user.uid;
-    user.getToken()
-      .then(t => token = t)
-      .then($location.path('/menu'))
-      .then($timeout)
-  } else {
-    alert("Please login or register to continue");
-  }
-})
+    if (user) {
+      userId = user.uid;
+      user.getToken()
+        .then(t => token = t)
+        .then($location.path('/menu'))
+        .then($timeout);
+    } else {
+      alert('Please login or register to continue');
+    }
+  });
 
   return {
     register(email, password){
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then( (response) => {
-        console.log(response)
-      })
-      .catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-      })
+      firebase.auth().createUserWithEmailAndPassword(email, password);
+      // .then( (response) => {
+      //   // console.log(response);
+      // })
+      // .catch(function(error) {
+        // var errorCode = error.code;
+        // var errorMessage = error.message;
+      // });
     },
 
     logIn(email, password) {
-      firebase.auth().signInWithEmailAndPassword(email, password)
-      .then( (response) => {console.log(response)})
-      .catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-      });
+      firebase.auth().signInWithEmailAndPassword(email, password);
+      // .then( (response) => {console.log(response);})
+      // .catch(function(error) {
+        // var errorCode = error.code;
+        // var errorMessage = error.message;
+      // });
+    },
+    logout () {
+      return	firebase.auth().signOut();
+    },
+    currentUser() {
+      return
+      user: userid;
     }
-  }
+  };
 
 
 
