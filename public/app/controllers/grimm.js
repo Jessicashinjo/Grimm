@@ -13,6 +13,7 @@ grimm
       game.load.audio('backgroundMusic', ['assets/audio/Dungeon-Background.mp3']);
       game.load.audio('playerHurt', ['assets/audio/playerHurt.wav']);
       game.load.audio('playerLoss', ['assets/audio/youLose.wav']);
+      game.load.audio('coinDing', ['assets/audio/coinSound.wav']);
       game.load.tilemap('basic_map', 'assets/maps/grimm_level1.json', null, Phaser.Tilemap.TILED_JSON);
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
@@ -35,6 +36,7 @@ grimm
     let music;
     let hurtSound;
     let youLose;
+    let ding;
     let map;
     let p;
     let jumpTimer = 0;
@@ -82,6 +84,8 @@ grimm
       music = game.add.audio('backgroundMusic');
       hurtSound = game.add.audio('playerHurt');
       youLose = game.add.audio('playerLoss');
+      ding = game.add.audio('coinDing');
+      ding.volume = 0.1;
 
       music.play();
 
@@ -375,6 +379,7 @@ grimm
     }
 
     function collectCoin(p, coin) {
+      ding.play();
       coin.kill();
       score += 10;
       // scoreText.text = `Score: ${score}`;
