@@ -62,7 +62,7 @@ grimm
     let timer;
     let timeText;
     let addTime;
-    let currentTime = 90;
+    let currentTime = 30;
     // let fallingSpikesGroup;
     // let spikeTime = 0;
     // let spike;
@@ -160,7 +160,7 @@ grimm
       timer.add(Phaser.Timer.MINUTE * 1 + Phaser.Timer.SECOND * 30, playerDeath, this);
       timer.start();
 
-      timeText = game.add.text(50, 100, `Time Remaining: ${currentTime}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+      timeText = game.add.text(50, 50, `Current Time: ${currentTime}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
       timeText.fixedToCamera = true;
 
       game.cameraLastX = game.camera.x;
@@ -182,6 +182,7 @@ grimm
       game.physics.arcade.collide(movingSawsGroup, enemyCollision);
       game.physics.arcade.collide(lever, ground);
       game.physics.arcade.collide(p, fallingStepsGroup);
+      game.physics.arcade.collide(fallingStepsGroup, enemyCollision);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
       // game.physics.arcade.overlap(p, stillSawsGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
@@ -322,6 +323,12 @@ grimm
     }
 
     function gameWin() {
+      youWin.play();
+      youWin.fadeOut(4000);
+      music.stop();
+      hurtSound.stop();
+      youLose.stop();
+      ding.stop();
       score += 300;
       $scope.currentTime;
       console.log(currentTime);
@@ -386,10 +393,10 @@ grimm
       coin.kill();
       score += 10;
       // scoreText.text = `Score: ${score}`;
-      currentTime += 5;
+      currentTime += 2;
       // console.log(currentTime);
-      // timeText.text = `Time Remaining: ${currentTime}`;
-      // game.debug.text('Time Remaining:' + (Math.round(timer.duration / 1000)), 20, 70, "#fff");
+      // timeText.text = `Current Time: ${currentTime}`;
+      // game.debug.text('Current Time:' + (Math.round(timer.duration / 1000)), 20, 70, "#fff");
     }
 
     function createShroomGroup() {
@@ -610,14 +617,14 @@ grimm
       p.kill();
       timer.stop();
       restartGame();
-      currentTime = 90;
+      currentTime = 30;
       score = 0;
 
     }
 
     function timeClock() {
       if (timer.running && currentTime > 0) {
-        timeText.text = `Time Remaining: ${currentTime}`;
+        timeText.text = `Current Time: ${currentTime}`;
       }
       else {
         timeText.text = 'Your time ran out!';
