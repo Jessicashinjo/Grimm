@@ -21,5 +21,10 @@ grimm
       controller: 'StatsCtrl',
       controllerAs: 'stats'
     })
-    .otherwise('/menu');
+    .when('/win', {
+      templateUrl: 'app/partials/win.html',
+      controller: 'WinCtrl',
+      controllerAs: 'win'
+    })
+    .otherwise('/login');
   });

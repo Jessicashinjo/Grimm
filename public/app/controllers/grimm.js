@@ -14,6 +14,7 @@ grimm
       game.load.audio('playerHurt', ['assets/audio/playerHurt.wav']);
       game.load.audio('playerLoss', ['assets/audio/youLose.wav']);
       game.load.audio('coinDing', ['assets/audio/coinSound.wav']);
+      game.load.audio('winSound', ['assets/audio/winSound.mp3']);
       game.load.tilemap('basic_map', 'assets/maps/grimm_level1.json', null, Phaser.Tilemap.TILED_JSON);
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
@@ -37,6 +38,7 @@ grimm
     let hurtSound;
     let youLose;
     let ding;
+    let youWin;
     let map;
     let p;
     let jumpTimer = 0;
@@ -86,6 +88,7 @@ grimm
       youLose = game.add.audio('playerLoss');
       ding = game.add.audio('coinDing');
       ding.volume = 0.1;
+      youWin = game.add.audio('winSound');
 
       music.play();
 
@@ -322,7 +325,7 @@ grimm
       score += 300;
       $scope.currentTime;
       console.log(currentTime);
-      $scope.$apply(function() { $location.path("/stats"); })
+      $scope.$apply(function() { $location.path("/win"); })
       };
 
       // scoreText = `Score: ${score}`;
@@ -602,10 +605,6 @@ grimm
     }
 
     function playerDeath() {
-      // restartGame();
-      // player.animations.play('damage');
-      // explosionSound.play();
-      // enemy.body.x = -200000;
       youLose.play();
       p.body.y -= 75;
       p.kill();
@@ -623,14 +622,10 @@ grimm
       else {
         timeText.text = 'Your time ran out!';
         playerDeath();
-        // game.add.text(50, 100, "Your time ran out!", 2, 14, "#0f0");
       }
     }
 
     function restartGame() {
-        // Start the 'stateTestmap' state, which restarts the game
-        // StateManager.destroy('stateTestmap');
-        // game.state.clear('stateTestmap')
       game.state.start('lvl1');
     }
 
