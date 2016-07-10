@@ -1,6 +1,11 @@
 grimm
   .config(($routeProvider) => {
     $routeProvider
+    .when('/login', {
+      templateUrl: 'app/partials/login.html',
+      controller: 'LoginCtrl',
+      controllerAs: 'login'
+    })
     .when('/menu', {
       templateUrl: 'app/partials/menu.html',
       controller: 'MenuCtrl',
@@ -16,5 +21,10 @@ grimm
       controller: 'StatsCtrl',
       controllerAs: 'stats'
     })
-    .otherwise('/menu');
+    .when('/win', {
+      templateUrl: 'app/partials/win.html',
+      controller: 'WinCtrl',
+      controllerAs: 'win'
+    })
+    .otherwise('/login');
   });

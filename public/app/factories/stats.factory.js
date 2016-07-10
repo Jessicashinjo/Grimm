@@ -9,9 +9,16 @@ grimm
         return $http
           .get(`${firebaseURL}/leaderboard.json`)
       },
-      setNewStat (){
-        // $http
-        //   .post(`${firebaseURL}/leaderboard/${userStat}`);
+      setNewStat (userStat){
+        $http
+          .post(`${firebaseURL}/leaderboard/${userStat}`);
+      },
+      logOut() {
+        firebase.auth().signOut().then(function() {
+          // Sign-out successful.
+        }, function(error) {
+          // An error happened.
+        });
       }
     };
 

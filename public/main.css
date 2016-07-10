@@ -12,9 +12,10 @@ Log In
 .loginView {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/metalGrunge.jpg');
+  background-image: url('assets/backgrounds/menu2.2.png');
   background-size: cover;
   background-repeat: no-repeat;
+  text-align: center;
 }
 
 .loginView h1 {
@@ -22,8 +23,12 @@ Log In
   text-align: center;
 }
 
+.grimmLogo {
+  padding-top: 3%;
+}
+
 form {
-  padding-top: 15%;
+  padding-top: 3%;
   max-width: 30%;
   margin: auto;
   color: white;
@@ -37,6 +42,15 @@ form h3 {
   color: white;
 }
 
+.whiteButton {
+  background: white;
+  color: black;
+}
+
+.greyButton {
+  background: rgb(64, 59, 59);
+}
+
 /***************
 Menu Styling
 ****************/
@@ -44,7 +58,7 @@ Menu Styling
 #menu {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/menu1.png');
+  background-image: url('assets/backgrounds/menu1.2.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -56,25 +70,13 @@ Menu Styling
   font-size: 2.5em;
 }
 
-/*.menuInfo {
-  padding-bottom: 2%;
-  position: absolute;
-  top: 21%;
-  left: 12%;
-  opacity: .9;
-  border-radius: 2em;
-  width : 80%;
-  /*margin: auto;*/
-  font-size: 1.5em;
-  font-weight: bold;
-  color: rgb(77, 8, 8);
-  background: rgba(255, 255, 255, .5);
-}*/
-
 .startBtn {
-  background-color: white;
-  width: 100%;
-  font-size: 2em;
+  background: rgb(64, 59, 59);
+  width: 300px;
+  font-size: 2.5em;
+  position: fixed;
+  bottom: 8%;
+  right: 38%;
 }
 
 /************
@@ -84,9 +86,17 @@ Game View
 .gameView {
   width: 100%;
   min-height: 777px;
-  background-image: url('assets/backgrounds/menu2.png');
+  background-image: url('assets/backgrounds/menu2.2.png');
   background-size: cover;
   background-repeat: no-repeat;
+  text-align: center;
+}
+
+.gameView button {
+  font-size: 2em;
+  margin-top: 1%;
+  background: rgb(64, 59, 59);
+  width: 300px;
 }
 
 .gameView img {
@@ -94,7 +104,6 @@ Game View
   margin: auto;
   padding: 1%;
   border-radius: 2em;
-  /*text-align: center;*/
 }
 
 canvas {
@@ -103,4 +112,42 @@ canvas {
     display: block;
     width: 100%;
     border-radius: 2em;
+}
+
+/************
+Win View
+************/
+
+.win {
+  width: 100%;
+  min-height: 777px;
+  background-image: url('assets/backgrounds/menu2.2.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  text-align: center;
+}
+
+.winTextBg {
+  background: white;
+  border-radius: 2em;
+  opacity: 0.7;
+  max-width: 70%;
+  padding: 0 5%;
+  position: fixed;
+  top: 10%;
+  left: 22%;
+}
+
+.win button {
+  font-size: 2.5em;
+  background: rgb(64, 59, 59);
+  margin-top: 3%;
+  margin-bottom: 2%;
+}
+
+.winText {
+  padding-top: 10%;
+  text-align: center;
+  font-size: 8em;
+  color: #red;
 }

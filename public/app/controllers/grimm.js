@@ -10,11 +10,16 @@ grimm
 
 
     function preload() {
+      game.load.audio('backgroundMusic', ['assets/audio/Dungeon-Background.mp3']);
+      game.load.audio('playerHurt', ['assets/audio/playerHurt.wav']);
+      game.load.audio('playerLoss', ['assets/audio/youLose.wav']);
+      game.load.audio('coinDing', ['assets/audio/coinSound.wav']);
+      game.load.audio('winSound', ['assets/audio/winSound.mp3']);
       game.load.tilemap('basic_map', 'assets/maps/grimm_level1.json', null, Phaser.Tilemap.TILED_JSON);
       game.load.image('tileset', 'assets/tilesets/sheetbw.png');
       game.load.image('tileset2', 'assets/tilesets/nautical_tilesheetbw.png');
       game.load.image('tileset3', 'assets/tilesets/spikes.png');
-      game.load.image('background', 'assets/backgrounds/bloodPattern.png');
+      game.load.image('background', 'assets/backgrounds/bloodPattern1.png');
       game.load.image('saw', 'assets/sprites/Obstacle-2/Obstacle-2_000.png');
       game.load.image('enemyBullet', 'assets/dye/enemyBullet.png');
       game.load.image('pBullet', 'assets/sprites/playerBullet.png');
@@ -29,6 +34,11 @@ grimm
       game.load.spritesheet('stepSprite', 'assets/sprites/fallingStep.png', 35, 35);
     }
 
+    let music;
+    let hurtSound;
+    let youLose;
+    let ding;
+    let youWin;
     let map;
     let p;
     let jumpTimer = 0;
@@ -49,6 +59,10 @@ grimm
     let enemyCollision;
     let lever;
     let fallingStepsGroup;
+    let timer;
+    let timeText;
+    let addTime;
+    let currentTime = 30;
     // let fallingSpikesGroup;
     // let spikeTime = 0;
     // let spike;
@@ -56,7 +70,7 @@ grimm
     let score;
     // let health = 1;
     // let healthText;
-    let scoreText;
+    // let scoreText;
     // let winText;
     let right = 16;
     let left = 22;
@@ -69,6 +83,15 @@ grimm
     //   };
 
     function create() {
+      music = game.add.audio('backgroundMusic');
+      hurtSound = game.add.audio('playerHurt');
+      youLose = game.add.audio('playerLoss');
+      ding = game.add.audio('coinDing');
+      ding.volume = 0.1;
+      youWin = game.add.audio('winSound');
+
+      music.play();
+
       //  Enable Arcade physics
       game.physics.startSystem(Phaser.Physics.ARCADE);
       score = 0;
@@ -130,17 +153,23 @@ grimm
       cursors = game.input.keyboard.createCursorKeys();
       shoot = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-      scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
-      scoreText.fixedToCamera = true;
+      // scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+      // scoreText.fixedToCamera = true;
+
+      timer = game.time.create();
+      timer.add(Phaser.Timer.MINUTE * 1 + Phaser.Timer.SECOND * 30, playerDeath, this);
+      timer.start();
+
+      timeText = game.add.text(50, 50, `Current Time: ${currentTime}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
+      timeText.fixedToCamera = true;
 
       game.cameraLastX = game.camera.x;
       game.cameraLastY = game.camera.y;
 
       // p.body.bodyLastY = p.body.position.y;
 
-
+      timer.loop(1000, () => currentTime--);
     }
-
 
     function update() {
       game.physics.arcade.collide(p, ground);
@@ -153,7 +182,9 @@ grimm
       game.physics.arcade.collide(movingSawsGroup, enemyCollision);
       game.physics.arcade.collide(lever, ground);
       game.physics.arcade.collide(p, fallingStepsGroup);
+      game.physics.arcade.collide(fallingStepsGroup, enemyCollision);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
+      // game.physics.arcade.overlap(p, stillSawsGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
@@ -222,6 +253,8 @@ grimm
       shroomCollision();
       sawCollision();
 
+
+
       // if (p.body.position.y !== p.body.lastY) {
       //   game.background.tilePosition.y -= 0.5;
       // }
@@ -235,13 +268,17 @@ grimm
       }
       // game.background.tilePosition.x -= 0.5;
 
+
+
+      timeClock();
     }
 
     function render() {
-
+      // game.debug.text('Time: ' + parseFloat(this.game.time.totalElapsedSeconds()).toFixed(1), 32, 32);
         // game.debug.body(p);
         // game.debug.bodyInfo(p, 32, 320);
         // game.debug.body(bullets.children[0])
+
 
     }
 
@@ -286,8 +323,19 @@ grimm
     }
 
     function gameWin() {
+      youWin.play();
+      youWin.fadeOut(4000);
+      music.stop();
+      hurtSound.stop();
+      youLose.stop();
+      ding.stop();
       score += 300;
-      scoreText = `Score: ${score}`;
+      $scope.currentTime;
+      console.log(currentTime);
+      $scope.$apply(function() { $location.path("/win"); })
+      };
+
+      // scoreText = `Score: ${score}`;
       //  \n YOU SURVIVED \n-click the stats button to continue-`;
       // scoreText.font = 'Lucida Console';
       // scoreText.fontSize = '40px';
@@ -325,7 +373,7 @@ grimm
       //  Here we create a linear gradient on the Text context.
       //  This uses the exact same method of creating a gradient as you do on a normal Canvas context.
 
-    }
+
 
     function createCoinsGroup() {
       //  Here we create our coins group
@@ -341,9 +389,14 @@ grimm
     }
 
     function collectCoin(p, coin) {
+      ding.play();
       coin.kill();
       score += 10;
-      scoreText.text = `Score: ${score}`;
+      // scoreText.text = `Score: ${score}`;
+      currentTime += 2;
+      // console.log(currentTime);
+      // timeText.text = `Current Time: ${currentTime}`;
+      // game.debug.text('Current Time:' + (Math.round(timer.duration / 1000)), 20, 70, "#fff");
     }
 
     function createShroomGroup() {
@@ -374,7 +427,7 @@ grimm
       bullet.kill();
       shroom.kill();
       score += 20;
-      scoreText.text = `Score: ${score}`;
+      // scoreText.text = `Score: ${score}`;
     }
 
     function createStillSaws() {
@@ -507,8 +560,9 @@ grimm
     }
 
     function bulletKill() {
+      hurtSound.play();
       bullet.kill();
-      losePoints();
+      loseTime();
     }
 
     function enemyPlayerBulletKill() {
@@ -548,32 +602,37 @@ grimm
       }
     }
 
-    function losePoints() {
-      if ( (score - 10) >= 0) {
-        score -= 20;
-        scoreText.text = `Score: ${score}`;
+    function loseTime() {
+      if ( (currentTime - 10) >= 0) {
+        currentTime -= 10;
+        // scoreText.text = `Score: ${score}`;
       } else {
         playerDeath();
       }
     }
 
     function playerDeath() {
-      // restartGame();
-      // player.animations.play('damage');
-      // explosionSound.play();
-      // enemy.body.x = -200000;
+      youLose.play();
       p.body.y -= 75;
       p.kill();
+      timer.stop();
       restartGame();
+      currentTime = 30;
       score = 0;
-      // --hitCount;
-      // healthText.text = 'Health: ' + hitCount;
+
+    }
+
+    function timeClock() {
+      if (timer.running && currentTime > 0) {
+        timeText.text = `Current Time: ${currentTime}`;
+      }
+      else {
+        timeText.text = 'Your time ran out!';
+        playerDeath();
+      }
     }
 
     function restartGame() {
-        // Start the 'stateTestmap' state, which restarts the game
-        // StateManager.destroy('stateTestmap');
-        // game.state.clear('stateTestmap')
       game.state.start('lvl1');
     }
 
