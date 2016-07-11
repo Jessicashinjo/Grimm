@@ -12,9 +12,21 @@ Win the game by avoiding the traps and completing the level before the timer run
 
 ### Installation
 ---
+In your terminal run:
 ```sh
 $ git clone [https://github.com/Jessicashinjo/Grimm.git]
 ```
 ```sh
 $ bower install
 ```
+
+### Technologies
+---
+  - Phaser.io
+  - AngularJS
+  - Firebase
+
+### License
+---
+
+MIT

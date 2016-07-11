@@ -184,7 +184,6 @@ grimm
       game.physics.arcade.collide(p, fallingStepsGroup);
       game.physics.arcade.collide(fallingStepsGroup, enemyCollision);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
-      // game.physics.arcade.overlap(p, stillSawsGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
       // game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
