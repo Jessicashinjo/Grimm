@@ -1,7 +1,9 @@
 grimm
   .controller('GameCtrl', function ($scope, $location) {
+    //creates a new game object and creates a canvas to display in the HTML 1000 * 500
     var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'gameCanvas');
 
+    //creates a new state for the game
     let lvl1 = {preload: preload, create: create,update: update, render: render};
     game.state.add('lvl1', lvl1);
     game.state.start('lvl1');
@@ -76,15 +78,17 @@ grimm
 
       music.play();
 
-      //  Enable Arcade physics
+      //  Enable Arcade physics and set score
       game.physics.startSystem(Phaser.Physics.ARCADE);
       score = 0;
       game.score = score;
 
+      //bounds have been set equal to the canvas size so that the player can't
+      //go screen
       game.world.setBounds(0, 0, 1000, 500);
       createLevel1();
 
-      //COLLISION
+      //sets tiles from 1 to 2500 to be collision tiles in each separate layer
       map.setCollisionBetween(1, 2500, true, 'platform');
       map.setCollisionBetween(1, 2500, true, 'dangerZone');
       map.setCollisionBetween(1, 2500, true, 'enemyCollision');
@@ -117,11 +121,10 @@ grimm
 
       playerRun();
 
-      //  Enable if for physics. This creates a default rectangular body.
+      // creates rectangular player body
       game.physics.arcade.enable(p);
 
       p.body.setSize(28, 34, 8, 13);
-      // game.physics.arcade.setBoundsToWorld(true, true, true, false, false);
       p.body.collideWorldBounds = true;
 
       p.body.fixedRotation = true;
@@ -130,9 +133,6 @@ grimm
       camera();
       cursors = game.input.keyboard.createCursorKeys();
       shoot = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-      // scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
-      // scoreText.fixedToCamera = true;
 
       timer = game.time.create();
       timer.add(Phaser.Timer.MINUTE * 1 + Phaser.Timer.SECOND * 30, playerDeath, this);
@@ -220,9 +220,6 @@ grimm
         // game.background.tilePosition.y += 0.5 * (game.cameraLastX - game.camera.x);
         game.cameraLastX = game.camera.x;
       }
-      // game.background.tilePosition.x -= 0.5;
-
-
 
       timeClock();
     }
