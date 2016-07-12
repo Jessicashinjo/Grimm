@@ -2,13 +2,12 @@ grimm
   .controller('GameCtrl', function ($scope, $location) {
     var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'gameCanvas');
 
-    // let game = gameInit;
     let lvl1 = {preload: preload, create: create,update: update, render: render};
     game.state.add('lvl1', lvl1);
     game.state.start('lvl1');
 
 
-
+    //Loads all of the assets that will be used in the game
     function preload() {
       game.load.audio('backgroundMusic', ['assets/audio/Dungeon-Background.mp3']);
       game.load.audio('playerHurt', ['assets/audio/playerHurt.wav']);
@@ -43,7 +42,6 @@ grimm
     let p;
     let jumpTimer = 0;
     let cursors;
-    // let background;
     let ground;
     let danger;
     let coinsGroup;
@@ -61,26 +59,12 @@ grimm
     let fallingStepsGroup;
     let timer;
     let timeText;
-    let addTime;
     let currentTime = 30;
-    // let fallingSpikesGroup;
-    // let spikeTime = 0;
-    // let spike;
-    // let guns;
     let score;
-    // let health = 1;
-    // let healthText;
-    // let scoreText;
-    // let winText;
     let right = 16;
     let left = 22;
     let facing;
     let shoot;
-    // let maceGroup
-    // let mace1 = {
-    //     'x': [280, 384, 415, 514],
-    //     'y': [187, 281, 281, 208]
-    //   };
 
     function create() {
       music = game.add.audio('backgroundMusic');
@@ -100,10 +84,6 @@ grimm
       game.world.setBounds(0, 0, 1000, 500);
       createLevel1();
 
-
-      //  Un-comment this on to see the collision tiles
-      // ground.debug = true;
-
       //COLLISION
       map.setCollisionBetween(1, 2500, true, 'platform');
       map.setCollisionBetween(1, 2500, true, 'dangerZone');
@@ -114,8 +94,6 @@ grimm
       createCoinsGroup();
 
       createGunsGroup();
-
-      // createFallingSpikes();
 
       createBullets();
 
@@ -166,8 +144,6 @@ grimm
       game.cameraLastX = game.camera.x;
       game.cameraLastY = game.camera.y;
 
-      // p.body.bodyLastY = p.body.position.y;
-
       timer.loop(1000, () => currentTime--);
     }
 
@@ -184,8 +160,8 @@ grimm
       game.physics.arcade.collide(p, fallingStepsGroup);
       game.physics.arcade.collide(fallingStepsGroup, enemyCollision);
       game.physics.arcade.overlap(p, bullet, bulletKill, null, this);
-      // game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
-      // game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
+      game.physics.arcade.overlap(p, shroomGroup, playerDeath, null, this);
+      game.physics.arcade.overlap(p, movingSawsGroup, playerDeath, null, this);
       game.physics.arcade.overlap(playerBullet, shroomGroup, shroomDeath, null, this);
       game.physics.arcade.overlap(playerBullet, bullets, enemyPlayerBulletKill, null, this);
       game.physics.arcade.overlap(p, coinsGroup, collectCoin, null, this);
@@ -208,19 +184,6 @@ grimm
           playerBullet.kill();
         }
       }, this);
-
-      // fallingSpikesGroup.forEach(function(spikeHolder){
-      //   if(spikeHolder.body.x - p.body.x <= 300) {
-      //     dropSpikes(spikeHolder);
-      //   }
-      // });
-      // fallingSpikesGroup.forEachAlive(function(spike){
-      //   if(spike.body.x - game.cameraLastX <= 0) {
-      //     spike.kill();
-      //   }
-      // });
-
-
 
       p.body.velocity.x = 0;
 
@@ -251,14 +214,6 @@ grimm
 
       shroomCollision();
       sawCollision();
-
-
-
-      // if (p.body.position.y !== p.body.lastY) {
-      //   game.background.tilePosition.y -= 0.5;
-      // }
-
-      // game.background.tilePosition.x -= 0.5;
 
       if(game.camera.x !== game.cameraLastX){
         game.background.tilePosition.x += 0.5 * (game.cameraLastX - game.camera.x);
@@ -304,7 +259,6 @@ grimm
       ground = map.createLayer('platform');
       enemyCollision = map.createLayer('enemyCollision');
       enemyCollision.alpha = 0;
-      // health = map.createLayer('health');
 
       ground.resizeWorld();
     }
@@ -330,49 +284,8 @@ grimm
       ding.stop();
       score += 300;
       $scope.currentTime;
-      console.log(currentTime);
-      $scope.$apply(function() { $location.path("/win"); })
-      };
-
-      // scoreText = `Score: ${score}`;
-      //  \n YOU SURVIVED \n-click the stats button to continue-`;
-      // scoreText.font = 'Lucida Console';
-      // scoreText.fontSize = '40px';
-
-      // var textGradient = scoreText.context.createLinearGradient(0, 0, 0, scoreText.height);
-      //
-      // //  Add in 2 color stops
-      // textGradient.addColorStop(0, '#e31029');
-      // textGradient.addColorStop(1, '#810e22');
-      //
-      // //  And apply to the Text
-      // scoreText.fill = textGradient;
-
-
-      // winText = game.add.text('YOU SURVIVED! \n-click the stats button-',
-      // {font: 'Lucida Console', fontSize: '4em'});
-
-
-
-      // winText.fixedToCamera = true;
-      // winText.cameraOffset.setTo(250, 500);
-
-
-
-      // scoreText = game.add.text(20, 20, `Score: ${score}`, { fontSize: '32px', fill: '#FFF', align: 'right' });
-      // scoreText.fixedToCamera = true;
-
-      //  Centers the text
-      // winText.anchor.set(0.5, 0.5);
-      // winText.align = 'right';
-      // winText.padding = '5%';
-      //  Our font + size
-      // winText.font = 'Arial';
-
-      //  Here we create a linear gradient on the Text context.
-      //  This uses the exact same method of creating a gradient as you do on a normal Canvas context.
-
-
+      $scope.$apply(function() { $location.path('/win'); });
+    }
 
     function createCoinsGroup() {
       //  Here we create our coins group
@@ -391,11 +304,7 @@ grimm
       ding.play();
       coin.kill();
       score += 10;
-      // scoreText.text = `Score: ${score}`;
       currentTime += 2;
-      // console.log(currentTime);
-      // timeText.text = `Current Time: ${currentTime}`;
-      // game.debug.text('Current Time:' + (Math.round(timer.duration / 1000)), 20, 70, "#fff");
     }
 
     function createShroomGroup() {
@@ -426,7 +335,6 @@ grimm
       bullet.kill();
       shroom.kill();
       score += 20;
-      // scoreText.text = `Score: ${score}`;
     }
 
     function createStillSaws() {
@@ -468,37 +376,6 @@ grimm
         }
       });
     }
-
-    // function createFallingSpikes() {
-    //   fallingSpikesGroup = game.add.group();
-    //   fallingSpikesGroup.enableBody = true;
-    //   fallingSpikesGroup.createMultiple(10, 'fallingSpike');
-    //   map.createFromObjects('dangerObjects', 1502, 'fallingSpike', 0, true, false, fallingSpikesGroup);
-    //   // fallingSpikesGroup.callAll('animations.add', 'animations', 'fall', [0], 1, true);
-    //   // fallingSpikesGroup.callAll('animations.play', 'animations', 'fall');
-    //
-    //   fallingSpikesGroup.forEach(function(spike){
-    //     spike.body.allowGravity = true;
-    //     spike.spikeTime = 0;
-    //     // gun.outOfBoundsKill = true;
-    //     // gun.checkWorldBounds = true;
-    //   });
-    // }
-    //
-    // function dropSpikes(spikeHolder) {
-    //   if (game.time.now > spikeHolder.spikeTime)
-    //   {
-    //     spike = fallingSpikesGroup.getFirstExists(false);
-    //     if (spike) {
-    //       // spike.anchor.setTo(0.5, 0.5);
-    //       spike.reset(spikeHolder.body.x, spikeHolder.body.y);
-    //       spikeHolder.spikeTime = game.time.now + 2000;
-    //       // bullet.body.velocity.x -100;
-    //       // bullet.body.velocity.y +400;
-    //       // game.physics.arcade.moveToObject(bullet, p, 500);
-    //     }
-    //   }
-    // }
 
     function createFallingSteps() {
       fallingStepsGroup = game.add.group();
@@ -604,7 +481,6 @@ grimm
     function loseTime() {
       if ( (currentTime - 10) >= 0) {
         currentTime -= 10;
-        // scoreText.text = `Score: ${score}`;
       } else {
         playerDeath();
       }
