@@ -79,6 +79,15 @@ Menu Styling
   right: 38%;
 }
 
+.logoutBtn {
+  background: rgb(152, 146, 146);
+  width: 150px;
+  font-size: 2em;
+  position: fixed;
+  top: 8%;
+  right: 10%;
+}
+
 /************
 Game View
 ************/
@@ -92,7 +101,7 @@ Game View
   text-align: center;
 }
 
-.gameView button {
+.menuBtn {
   font-size: 2em;
   margin-top: 1%;
   background: rgb(64, 59, 59);

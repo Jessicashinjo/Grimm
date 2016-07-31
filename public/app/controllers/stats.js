@@ -1,6 +1,5 @@
 angular.module('grimm')
   .controller('StatsCtrl', function (statsFactory, AuthFactory) {
-    // console.log('stats Controller')
     let user;
     const stats = this;
     stats.leaderboardData = null;

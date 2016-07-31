@@ -1,24 +1,32 @@
 "use strict";
 
 grimm
-  .controller('LoginCtrl', function($scope, $location, firebaseURL, AuthFactory){
+  .controller('LoginCtrl', function($scope, $location, $timeout, firebaseURL, AuthFactory){
     const login = this;
-    login.registerUser = (email, password) => {
-      AuthFactory.register(email, password);
-    }
-
-    login.loginUser = (email, password) => {
-      AuthFactory.logIn(email, password);
-      $location.path("/menu");
-    }
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        // User is signed in.
+        // console.log(user);
+        $location.path("/menu");
       } else {
-        // No user is signed in.
+        $location.path("/login");
+        $timeout();
       }
     });
+
+    login.registerUser = (email, password) => {
+      AuthFactory.register(email, password);
+    };
+
+    login.loginUser = (email, password) => {
+      AuthFactory.logIn(email, password);
+    };
+
+    login.logout_user = () => {
+      AuthFactory.logout();
+      $location.path('/login');
+    };
+
 
 
 

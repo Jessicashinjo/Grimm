@@ -1,5 +1,5 @@
 grimm
-  .controller('GameCtrl', function ($scope, $location) {
+  .controller('GameCtrl', function ($scope, $location, AuthFactory) {
     //creates a new game object and creates a canvas to display in the HTML 1000 * 500
     var game = new Phaser.Game(1000, 500, Phaser.AUTO, 'gameCanvas');
 
@@ -69,6 +69,8 @@ grimm
     let shoot;
 
     function create() {
+      //All of the audio that will be in the game is created here so that it
+      //can be called later
       music = game.add.audio('backgroundMusic');
       hurtSound = game.add.audio('playerHurt');
       youLose = game.add.audio('playerLoss');
@@ -76,6 +78,7 @@ grimm
       ding.volume = 0.1;
       youWin = game.add.audio('winSound');
 
+      //plays the main earie background music
       music.play();
 
       //  Enable Arcade physics and set score
@@ -93,8 +96,10 @@ grimm
       map.setCollisionBetween(1, 2500, true, 'dangerZone');
       map.setCollisionBetween(1, 2500, true, 'enemyCollision');
 
+      //sets general game gravity on the y axis to be 600
       game.physics.arcade.gravity.y = 600;
 
+      //creates all of the groups that need to be added to the game
       createCoinsGroup();
 
       createGunsGroup();
@@ -113,21 +118,21 @@ grimm
 
       createFallingSteps();
 
-      /****************
-      ****************/
-
-      //  Add a sprite
+      //  Adds player sprite
       p = game.add.sprite(100, 300, 'ninja');
 
       playerRun();
 
-      // creates rectangular player body
+      // creates rectangular player body for physics engine
       game.physics.arcade.enable(p);
 
+      //Sets the size of the collision box for the player
       p.body.setSize(28, 34, 8, 13);
-      p.body.collideWorldBounds = true;
 
-      p.body.fixedRotation = true;
+      //World bounds are the same as canvas size so this prevents player
+      //from going offscreen
+      p.body.collideWorldBounds = true;
+      // p.body.fixedRotation = true;
       p.body.damping = 0.5;
 
       camera();
@@ -173,7 +178,7 @@ grimm
         }
       });
       gunsGroup.forEachAlive(function(bullet){
-        if(bullet.body.x - game.cameraLastX <= 0) {
+        if(bullet.body.y - game.cameraLastY <= 0) {
           bullet.kill();
         }
       });
@@ -510,6 +515,11 @@ grimm
 
     $scope.go = function ( path ) {
       $location.path( path );
+    };
+
+    $scope.logout_user = () => {
+      AuthFactory.logout();
+      $location.path('/login');
     };
 
   });
