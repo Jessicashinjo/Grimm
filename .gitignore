@@ -1,5 +1,4 @@
 .DS_Store
 public/vendor
 node_modules
-.bowerrc
 .eslintrc.js
