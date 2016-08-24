@@ -1,5 +1,10 @@
 # GRIMM
 #### A side scrolling platform game using the Phaser framework.
+
+#### Play the Game!
+---
+[Click here to play](https://jessicashinjo.github.io/Grimm)
+
 #### Gameplay:
 ---
 Win the game by avoiding the traps and completing the level before the timer runs out. If the timer reaches zero the player will die and have to restart the level. To add time to the timer the player can collect coins throughout the level.
@@ -25,6 +30,7 @@ $ bower install
   - Phaser.io
   - AngularJS
   - Firebase
+  - Tiled
 
 ### License
 ---
